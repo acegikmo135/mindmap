@@ -70,3 +70,14 @@ export interface Message {
   content: string;
   timestamp: number;
 }
+
+export interface FriendRequest {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  reason?: string;
+  created_at: string;
+  sender_name?: string;
+  sender_avatar?: string;
+}

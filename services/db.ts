@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { Chapter, Flashcard, Message, UserProfile, MindMapData } from '../types';
+import { Chapter, Flashcard, Message, UserProfile, MindMapData, FriendRequest } from '../types';
 
 export interface UserData {
   chapters: Chapter[];
@@ -117,4 +117,41 @@ export const getMindMaps = async (userId: string, chapterId: string): Promise<Mi
   const userData = await getUserData(userId);
   if (!userData || !userData.mind_maps) return [];
   return userData.mind_maps[chapterId] || [];
+};
+
+export const sendFriendRequest = async (senderId: string, receiverId: string) => {
+  const { error } = await supabase
+    .from('friend_requests')
+    .insert({
+      sender_id: senderId,
+      receiver_id: receiverId,
+      status: 'PENDING'
+    });
+  if (error) throw error;
+};
+
+export const getFriendRequests = async (userId: string): Promise<FriendRequest[]> => {
+  const { data, error } = await supabase
+    .from('friend_requests')
+    .select('*, sender:profiles!sender_id(full_name, avatar_url)')
+    .eq('receiver_id', userId);
+  
+  if (error) {
+    console.error('Error fetching friend requests:', error);
+    return [];
+  }
+
+  return data.map(req => ({
+    ...req,
+    sender_name: req.sender?.full_name,
+    sender_avatar: req.sender?.avatar_url
+  })) as FriendRequest[];
+};
+
+export const updateFriendRequestStatus = async (requestId: string, status: 'ACCEPTED' | 'DECLINED', reason?: string) => {
+  const { error } = await supabase
+    .from('friend_requests')
+    .update({ status, reason })
+    .eq('id', requestId);
+  if (error) throw error;
 };

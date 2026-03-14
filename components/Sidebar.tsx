@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {activeChapterTitle && (
+      {(activeChapterTitle || currentMode === AppMode.PROFILE || currentMode === AppMode.COMMUNITY) && (
         <div className="px-6 pt-4 pb-0">
            <button 
              onClick={onGoHome}
