@@ -134,6 +134,18 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
           <button
+            onClick={onGoHome}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
+            ${currentMode === AppMode.SUBJECT_SELECTION
+                ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <BookOpenText className="w-5 h-5" />
+            <span className="font-medium text-sm">Select Subject</span>
+          </button>
+
+          <button
             onClick={() => setMode(AppMode.COMMUNITY)}
             className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
             ${currentMode === AppMode.COMMUNITY

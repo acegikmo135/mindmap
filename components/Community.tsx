@@ -19,6 +19,9 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
   const [declineReason, setDeclineReason] = useState<{ [key: string]: string }>({});
   const [showDeclineInput, setShowDeclineInput] = useState<string | null>(null);
   const [sentRequestIds, setSentRequestIds] = useState<string[]>([]);
+  const [incomingRequestIds, setIncomingRequestIds] = useState<string[]>([]);
+  const [acceptedFriendIds, setAcceptedFriendIds] = useState<string[]>([]);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     if (!user || !profile?.grade) return;
@@ -37,18 +40,25 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
         setClassmates(classmatesData);
       }
 
-      // Fetch incoming requests
-      const incomingRequests = await getFriendRequests(user.id);
-      setRequests(incomingRequests.filter(r => r.status === 'PENDING'));
-
-      // Fetch sent requests to disable buttons
-      const { data: sentData } = await supabase
+      // Fetch all requests involving the user
+      const { data: allReqs } = await supabase
         .from('friend_requests')
-        .select('receiver_id')
-        .eq('sender_id', user.id);
+        .select('*')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
       
-      if (sentData) {
-        setSentRequestIds(sentData.map(r => r.receiver_id));
+      if (allReqs) {
+        const sent = allReqs.filter(r => r.sender_id === user.id && r.status === 'PENDING').map(r => r.receiver_id);
+        const incoming = allReqs.filter(r => r.receiver_id === user.id && r.status === 'PENDING').map(r => r.sender_id);
+        const accepted = allReqs.filter(r => r.status === 'ACCEPTED').map(r => r.sender_id === user.id ? r.receiver_id : r.sender_id);
+        
+        setSentRequestIds(sent);
+        setIncomingRequestIds(incoming);
+        setAcceptedFriendIds(accepted);
+        setRequests(allReqs.filter(r => r.receiver_id === user.id && r.status === 'PENDING').map(req => ({
+          ...req,
+          sender_name: classmatesData?.find(c => c.id === req.sender_id)?.full_name || 'Classmate',
+          sender_avatar: classmatesData?.find(c => c.id === req.sender_id)?.avatar_url
+        })) as FriendRequest[]);
       }
 
       setLoading(false);
@@ -62,6 +72,8 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
     try {
       await sendFriendRequest(user.id, receiverId);
       setSentRequestIds(prev => [...prev, receiverId]);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       console.error('Error sending friend request:', error);
     }
@@ -101,7 +113,14 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-500">
+    <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-500 relative">
+      {showToast && (
+        <div className="fixed top-20 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 animate-in slide-in-from-right duration-300">
+          <Check className="w-5 h-5" />
+          <span className="font-medium">Friend request sent successfully!</span>
+        </div>
+      )}
+
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-serif font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
@@ -174,27 +193,43 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 h-10">
                   {classmate.hobbies || "No hobbies listed yet."}
                 </p>
-                <button 
-                  disabled={sentRequestIds.includes(classmate.id)}
-                  onClick={() => handleSendRequest(classmate.id)}
-                  className={`w-full py-2 font-medium rounded-lg transition-colors flex items-center justify-center gap-2 ${
-                    sentRequestIds.includes(classmate.id)
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-                    : 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40'
-                  }`}
-                >
-                  {sentRequestIds.includes(classmate.id) ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      Request Sent
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="w-4 h-4" />
-                      Connect
-                    </>
-                  )}
-                </button>
+                
+                {acceptedFriendIds.includes(classmate.id) ? (
+                  <div className="w-full py-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-medium rounded-lg flex items-center justify-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Friends
+                  </div>
+                ) : incomingRequestIds.includes(classmate.id) ? (
+                  <button 
+                    onClick={() => setActiveTab('REQUESTS')}
+                    className="w-full py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 font-medium rounded-lg hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Bell className="w-4 h-4" />
+                    Respond to Request
+                  </button>
+                ) : (
+                  <button 
+                    disabled={sentRequestIds.includes(classmate.id)}
+                    onClick={() => handleSendRequest(classmate.id)}
+                    className={`w-full py-2 font-medium rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                      sentRequestIds.includes(classmate.id)
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                      : 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40'
+                    }`}
+                  >
+                    {sentRequestIds.includes(classmate.id) ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Request Sent
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4" />
+                        Connect
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             ))}
           </div>
