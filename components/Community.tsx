@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { UserProfile, FriendRequest } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { sendFriendRequest, getFriendRequests, updateFriendRequestStatus } from '../services/db';
-import { Users, UserPlus, Loader2, Search, Bell, Check, X, MessageSquare } from 'lucide-react';
+import { sendFriendRequest, getFriendRequests, updateFriendRequestStatus, deleteFriendRequest } from '../services/db';
+import { Users, UserPlus, Loader2, Search, Bell, Check, X, MessageSquare, UserCheck } from 'lucide-react';
 
 interface CommunityProps {
   profile: UserProfile | null;
@@ -13,22 +13,23 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
   const { user } = useAuth();
   const [classmates, setClassmates] = useState<UserProfile[]>([]);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
+  const [friends, setFriends] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<'EXPLORE' | 'REQUESTS'>('EXPLORE');
+  const [activeTab, setActiveTab] = useState<'EXPLORE' | 'REQUESTS' | 'FRIENDS'>('EXPLORE');
   const [declineReason, setDeclineReason] = useState<{ [key: string]: string }>({});
   const [showDeclineInput, setShowDeclineInput] = useState<string | null>(null);
   const [sentRequestIds, setSentRequestIds] = useState<string[]>([]);
   const [incomingRequestIds, setIncomingRequestIds] = useState<string[]>([]);
   const [acceptedFriendIds, setAcceptedFriendIds] = useState<string[]>([]);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!user || !profile?.grade) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      
+    setLoading(true);
+    
+    try {
       // Fetch classmates
       const { data: classmatesData, error: classmatesError } = await supabase
         .from('profiles')
@@ -36,72 +37,114 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
         .eq('grade', profile.grade)
         .neq('id', user.id);
       
-      if (!classmatesError && classmatesData) {
-        setClassmates(classmatesData);
-      }
+      if (classmatesError) throw classmatesError;
+      setClassmates(classmatesData || []);
 
       // Fetch all requests involving the user
-      const { data: allReqs } = await supabase
+      const { data: allReqs, error: reqsError } = await supabase
         .from('friend_requests')
         .select('*')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
       
+      if (reqsError) throw reqsError;
+
       if (allReqs) {
         const sent = allReqs.filter(r => r.sender_id === user.id && r.status === 'PENDING').map(r => r.receiver_id);
         const incoming = allReqs.filter(r => r.receiver_id === user.id && r.status === 'PENDING').map(r => r.sender_id);
-        const accepted = allReqs.filter(r => r.status === 'ACCEPTED').map(r => r.sender_id === user.id ? r.receiver_id : r.sender_id);
+        const acceptedIds = allReqs.filter(r => r.status === 'ACCEPTED').map(r => r.sender_id === user.id ? r.receiver_id : r.sender_id);
         
         setSentRequestIds(sent);
         setIncomingRequestIds(incoming);
-        setAcceptedFriendIds(accepted);
+        setAcceptedFriendIds(acceptedIds);
+        
+        // Populate friends list
+        const friendsList = classmatesData?.filter(c => acceptedIds.includes(c.id)) || [];
+        setFriends(friendsList);
+
+        // Populate pending requests for the UI
         setRequests(allReqs.filter(r => r.receiver_id === user.id && r.status === 'PENDING').map(req => ({
           ...req,
           sender_name: classmatesData?.find(c => c.id === req.sender_id)?.full_name || 'Classmate',
           sender_avatar: classmatesData?.find(c => c.id === req.sender_id)?.avatar_url
         })) as FriendRequest[]);
       }
-
+    } catch (error) {
+      console.error('Error fetching community data:', error);
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [user, profile]);
+
+  const triggerToast = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   const handleSendRequest = async (receiverId: string) => {
     if (!user) return;
     try {
       await sendFriendRequest(user.id, receiverId);
       setSentRequestIds(prev => [...prev, receiverId]);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      triggerToast('Friend request sent!');
     } catch (error) {
       console.error('Error sending friend request:', error);
+      triggerToast('Failed to send request.');
     }
   };
 
-  const handleAcceptRequest = async (requestId: string) => {
+  const handleAcceptRequest = async (request: FriendRequest) => {
     try {
-      await updateFriendRequestStatus(requestId, 'ACCEPTED');
-      setRequests(prev => prev.filter(r => r.id !== requestId));
+      await updateFriendRequestStatus(request.id, 'ACCEPTED');
+      
+      // Update local states immediately
+      setRequests(prev => prev.filter(r => r.id !== request.id));
+      setIncomingRequestIds(prev => prev.filter(id => id !== request.sender_id));
+      setAcceptedFriendIds(prev => [...prev, request.sender_id]);
+      
+      // Add to friends list
+      const newFriend = classmates.find(c => c.id === request.sender_id);
+      if (newFriend) {
+        setFriends(prev => [...prev, newFriend]);
+      }
+      
+      triggerToast('Request accepted!');
     } catch (error) {
       console.error('Error accepting friend request:', error);
+      triggerToast('Failed to accept request.');
     }
   };
 
   const handleDeclineRequest = async (requestId: string) => {
-    const reason = declineReason[requestId] || '';
     try {
-      await updateFriendRequestStatus(requestId, 'DECLINED', reason);
+      // "Just remove from requests" - we'll delete it so they can try again if they want
+      await deleteFriendRequest(requestId);
+      
+      // Update local state
+      const declinedReq = requests.find(r => r.id === requestId);
+      if (declinedReq) {
+        setIncomingRequestIds(prev => prev.filter(id => id !== declinedReq.sender_id));
+      }
       setRequests(prev => prev.filter(r => r.id !== requestId));
       setShowDeclineInput(null);
+      triggerToast('Request declined.');
     } catch (error) {
       console.error('Error declining friend request:', error);
+      triggerToast('Failed to decline request.');
     }
   };
 
   const filteredClassmates = classmates.filter(c => 
     c.full_name?.toLowerCase().includes(search.toLowerCase()) || 
     c.hobbies?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredFriends = friends.filter(f =>
+    f.full_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (!profile?.grade) {
@@ -115,9 +158,9 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-500 relative">
       {showToast && (
-        <div className="fixed top-20 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 animate-in slide-in-from-right duration-300">
-          <Check className="w-5 h-5" />
-          <span className="font-medium">Friend request sent successfully!</span>
+        <div className="fixed top-20 right-4 z-50 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 animate-in slide-in-from-right duration-300">
+          <Check className="w-5 h-5 text-green-400" />
+          <span className="font-medium">{toastMessage}</span>
         </div>
       )}
 
@@ -138,6 +181,17 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
             Explore
           </button>
           <button 
+            onClick={() => setActiveTab('FRIENDS')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'FRIENDS' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            Friends
+            {friends.length > 0 && (
+              <span className="bg-primary-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                {friends.length}
+              </span>
+            )}
+          </button>
+          <button 
             onClick={() => setActiveTab('REQUESTS')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'REQUESTS' ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
@@ -151,12 +205,12 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
         </div>
       </div>
 
-      {activeTab === 'EXPLORE' && (
+      {(activeTab === 'EXPLORE' || activeTab === 'FRIENDS') && (
         <div className="mb-6 relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search classmates by name or hobbies..."
+            placeholder={activeTab === 'EXPLORE' ? "Search classmates..." : "Search friends..."}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none shadow-sm"
@@ -196,7 +250,7 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
                 
                 {acceptedFriendIds.includes(classmate.id) ? (
                   <div className="w-full py-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-medium rounded-lg flex items-center justify-center gap-2">
-                    <Users className="w-4 h-4" />
+                    <UserCheck className="w-4 h-4" />
                     Friends
                   </div>
                 ) : incomingRequestIds.includes(classmate.id) ? (
@@ -205,7 +259,7 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
                     className="w-full py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 font-medium rounded-lg hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
                   >
                     <Bell className="w-4 h-4" />
-                    Respond to Request
+                    Respond
                   </button>
                 ) : (
                   <button 
@@ -220,7 +274,7 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
                     {sentRequestIds.includes(classmate.id) ? (
                       <>
                         <Check className="w-4 h-4" />
-                        Request Sent
+                        Sent
                       </>
                     ) : (
                       <>
@@ -230,6 +284,35 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
                     )}
                   </button>
                 )}
+              </div>
+            ))}
+          </div>
+        )
+      ) : activeTab === 'FRIENDS' ? (
+        filteredFriends.length === 0 ? (
+          <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <UserCheck className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300">No friends yet</h3>
+            <p className="text-slate-500 mt-1">Connect with classmates to see them here!</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredFriends.map(friend => (
+              <div key={friend.id} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-3 overflow-hidden">
+                  {friend.avatar_url ? (
+                    <img src={friend.avatar_url} alt={friend.full_name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center font-bold text-slate-400">
+                      {friend.full_name?.charAt(0) || '?'}
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-bold text-slate-800 dark:text-white">{friend.full_name}</h3>
+                <p className="text-xs text-slate-500 mb-2">{friend.hobbies || "Classmate"}</p>
+                <div className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-bold rounded-full">
+                  Friend
+                </div>
               </div>
             ))}
           </div>
@@ -264,7 +347,7 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
                   
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => handleAcceptRequest(req.id)}
+                      onClick={() => handleAcceptRequest(req)}
                       className="p-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 transition-colors"
                       title="Accept"
                     >

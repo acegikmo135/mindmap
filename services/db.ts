@@ -122,11 +122,20 @@ export const getMindMaps = async (userId: string, chapterId: string): Promise<Mi
 export const sendFriendRequest = async (senderId: string, receiverId: string) => {
   const { error } = await supabase
     .from('friend_requests')
-    .insert({
+    .upsert({
       sender_id: senderId,
       receiver_id: receiverId,
-      status: 'PENDING'
-    });
+      status: 'PENDING',
+      reason: null // Clear any previous decline reason
+    }, { onConflict: 'sender_id,receiver_id' });
+  if (error) throw error;
+};
+
+export const deleteFriendRequest = async (requestId: string) => {
+  const { error } = await supabase
+    .from('friend_requests')
+    .delete()
+    .eq('id', requestId);
   if (error) throw error;
 };
 
