@@ -1,20 +1,43 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# CogniStruct NCERT
 
-# Run and deploy your AI Studio app
+A structured learning platform for NCERT students with AI-powered mind maps, active recall, and doubt solving.
 
-This contains everything you need to run your app locally.
+## Local Development
 
-View your app in AI Studio: https://ai.studio/apps/1c8de288-c7fe-4cac-8ec6-0b27e6f202ae
+1. **Clone the repository**
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+3. **Set up environment variables**
+   - Copy `.env.example` to `.env`
+   - Fill in your `GEMINI_API_KEY`, `VITE_SUPABASE_URL`, and `VITE_SUPABASE_ANON_KEY`.
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+5. **Open the app**
+   - Navigate to `http://localhost:3000`
 
-## Run Locally
+## Deployment (Vercel)
 
-**Prerequisites:**  Node.js
+This project is ready to be deployed on Vercel.
 
+1. Push your code to a GitHub repository.
+2. Connect your repository to Vercel.
+3. Add the following environment variables in the Vercel dashboard:
+   - `GEMINI_API_KEY`
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+4. Vercel will automatically detect the Vite project and deploy it.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Features
+
+- **Subject Selection**: Choose from prefilled NCERT subjects or create your own.
+- **Chapter Breakdown**: Sequential learning path with mastery tracking.
+- **AI Mind Maps**: Generate hierarchical mind maps for any chapter.
+- **Active Recall**: Test your knowledge with AI-generated questions.
+- **Flashcards**: Spaced repetition for better retention.
+- **Doubt Solver**: Real-time AI tutor for clarifying concepts.
+- **Community**: Connect with classmates in the same grade.
+- **Profile**: Personalize your learning experience.

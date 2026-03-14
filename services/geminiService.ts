@@ -1,10 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Message, Chapter } from '../types';
 
-// Safely accessing the API key (assumed to be in process.env)
-const API_KEY = process.env.API_KEY || '';
+// Safely accessing the API key
+const API_KEY = process.env.GEMINI_API_KEY || process.env.API_KEY || import.meta.env.VITE_GEMINI_API_KEY || '';
 
 let ai: GoogleGenAI | null = null;
+
+export const isGeminiConfigured = Boolean(API_KEY);
 
 export const initGemini = () => {
   if (!API_KEY) {

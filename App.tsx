@@ -18,6 +18,36 @@ import { PREFILLED_CHAPTERS } from './constants';
 import { Menu, Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { getUserData, saveUserData, getUserProfile, updateUserProfile } from './services/db';
+import { isSupabaseConfigured } from './lib/supabase';
+import { isGeminiConfigured } from './services/geminiService';
+import { AlertTriangle } from 'lucide-react';
+
+const ConfigError: React.FC = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+    <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8 border border-amber-200 dark:border-amber-900/50 text-center">
+      <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <AlertTriangle className="w-8 h-8 text-amber-600 dark:text-amber-500" />
+      </div>
+      <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-white mb-4">Configuration Required</h2>
+      <p className="text-slate-600 dark:text-slate-400 mb-6">
+        It looks like some environment variables are missing. Please ensure you have set up your <strong>Supabase</strong> and <strong>Gemini API</strong> keys in the settings.
+      </p>
+      <div className="space-y-3 text-left bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg text-sm">
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span className="text-slate-700 dark:text-slate-300">Supabase Configuration</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isGeminiConfigured ? 'bg-green-500' : 'bg-red-500'}`} />
+          <span className="text-slate-700 dark:text-slate-300">Gemini API Configuration</span>
+        </div>
+      </div>
+      <p className="mt-6 text-xs text-slate-400">
+        After adding the keys, you may need to refresh the page.
+      </p>
+    </div>
+  </div>
+);
 
 const AuthenticatedApp: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -300,6 +330,10 @@ const App: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
+
+  if (!isSupabaseConfigured) {
+    return <ConfigError />;
+  }
 
   if (loading) {
     return (
