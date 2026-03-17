@@ -10,6 +10,7 @@ interface AuthContextType {
   profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signInWithGoogle: () => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName?: string, grade?: string) => Promise<{ error: any }>;
   signOut: () => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
@@ -34,27 +35,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const handleAuthChange = async (session: Session | null) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
-        refreshProfile(session.user.id).then(() => setLoading(false));
-      } else {
-        setLoading(false);
-      }
-    });
-
-    // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        refreshProfile(session.user.id).then(() => setLoading(false));
+        try {
+          // Check if profile exists, if not create it from metadata (for OAuth)
+          const existingProfile = await getUserProfile(session.user.id);
+          if (!existingProfile) {
+            const metadata = session.user.user_metadata;
+            await updateUserProfile(session.user.id, {
+              email: session.user.email,
+              full_name: metadata.full_name || metadata.name || '',
+              avatar_url: metadata.avatar_url || metadata.picture || ''
+            });
+          }
+          await refreshProfile(session.user.id);
+        } catch (err) {
+          console.error('Auth sync error:', err);
+        }
       } else {
         setProfile(null);
-        setLoading(false);
       }
+      setLoading(false);
+    };
+
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleAuthChange(session);
+    });
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleAuthChange(session);
     });
 
     return () => subscription.unsubscribe();
@@ -62,6 +76,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     return await supabase.auth.signInWithPassword({ email, password });
+  };
+
+  const signInWithGoogle = async () => {
+    return await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
   };
 
   const signUp = async (email: string, password: string, fullName?: string, grade?: string) => {
@@ -93,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     profile,
     loading,
     signIn,
+    signInWithGoogle,
     signUp,
     signOut,
     refreshProfile

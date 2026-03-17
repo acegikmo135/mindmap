@@ -18,6 +18,7 @@ import { PREFILLED_CHAPTERS } from './constants';
 import { Menu, Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { getUserData, saveUserData, getUserProfile, updateUserProfile } from './services/db';
+import { initOneSignal, setOneSignalExternalId } from './services/notifications';
 import { isSupabaseConfigured } from './lib/supabase';
 import { isGeminiConfigured } from './services/geminiService';
 import { AlertTriangle } from 'lucide-react';
@@ -67,6 +68,10 @@ const AuthenticatedApp: React.FC = () => {
   // Load initial data
   useEffect(() => {
     if (!user) return;
+
+    // Initialize OneSignal
+    initOneSignal();
+    setOneSignalExternalId(user.id);
 
     const loadData = async () => {
       setIsLoadingData(true);
