@@ -215,6 +215,45 @@ export const generateRecallQuestion = async (conceptTitle: string, context: stri
   }
 };
 
+export const generateFlashcards = async (chapterTitle: string, concepts: string[]): Promise<{ front: string, back: string }[]> => {
+  if (!ai) initGemini();
+  if (!ai) return [];
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Generate 5 high-quality flashcards for the chapter "${chapterTitle}" covering these concepts: ${concepts.join(", ")}.
+      
+      Instructions:
+      1. Each flashcard should have a 'front' (question/term) and 'back' (answer/explanation).
+      2. Use simple language for 8th grade.
+      3. ${LATEX_INSTRUCTION}
+      4. Return valid JSON as an array of objects.
+      5. Strictly limit to 5 flashcards.`,
+      config: {
+        responseMimeType: "application/json",
+        thinkingConfig: { thinkingBudget: 0 },
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              front: { type: Type.STRING },
+              back: { type: Type.STRING }
+            },
+            required: ["front", "back"]
+          }
+        }
+      }
+    });
+
+    return JSON.parse(response.text || "[]");
+  } catch (error) {
+    console.error("Generate Flashcards Error:", error);
+    return [];
+  }
+};
+
 export const evaluateAnswer = async (question: string, userAnswer: string, conceptTitle: string): Promise<{ isCorrect: boolean; feedback: string }> => {
   if (!ai) initGemini();
   if (!ai) return { isCorrect: true, feedback: "Simulation: Good job!" };

@@ -28,7 +28,6 @@ type DetailLevel = 'BRIEF' | 'STANDARD' | 'DETAILED';
 
 const NODE_WIDTH = 260; 
 const NODE_HEIGHT = 80;
-const EXPANDED_HEIGHT = 200; // Height reserved for expanded node
 const VERTICAL_GAP = 120; // Space between levels
 const HORIZONTAL_GAP = 80; // Space between siblings
 
@@ -175,25 +174,37 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
     if (!generatedMapData) return;
 
     // 1. Convert Data to Tree Structure
-    // Helper to determine dimensions based on selection state
-    const getNodeDimensions = (id: string, isRoot: boolean) => {
+    // Helper to determine dimensions based on selection state and content
+    const getNodeDimensions = (id: string, isRoot: boolean, title: string, description: string) => {
         const isSelected = id === selectedNodeId;
-        return {
-            width: NODE_WIDTH,
-            // If selected, reserve more space. Root is always slightly larger but doesn't expand the same way in this logic?
-            // Let's assume root expands too if selected.
-            height: isSelected && !isRoot ? EXPANDED_HEIGHT : (isRoot ? 100 : NODE_HEIGHT)
-        };
+        
+        // Base width
+        const width = NODE_WIDTH;
+        
+        if (isRoot) {
+          return { width: 280, height: 100 };
+        }
+
+        if (!isSelected) {
+          return { width, height: NODE_HEIGHT };
+        }
+
+        // Calculate height based on content for expanded node
+        // Rough estimation: 20px per line (approx 40 chars per line at 14px font)
+        const charCount = description.length + title.length;
+        const estimatedLines = Math.ceil(charCount / 35);
+        const contentHeight = Math.max(160, estimatedLines * 22 + 100); // min 160, plus padding/header
+        
+        return { width, height: contentHeight };
     };
 
-    const rootDims = getNodeDimensions('root', true);
     const rootNode: TreeNode = {
       id: 'root',
       data: { title: generatedMapData.rootTitle, description: "Main Topic", isRoot: true },
       x: 0,
       y: 0,
       width: 280, 
-      height: rootDims.height,
+      height: 100,
       children: [],
       depth: 0
     };
@@ -202,7 +213,7 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
     
     // Create nodes
     generatedMapData.nodes.forEach(n => {
-      const dims = getNodeDimensions(n.id, false);
+      const dims = getNodeDimensions(n.id, false, n.title, n.description);
       nodeMap.set(n.id, {
         id: n.id,
         data: { ...n, isRoot: false },
@@ -619,14 +630,9 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
                   left: node.x,
                   top: node.y,
                   width: node.width,
-                  height: isSelected ? EXPANDED_HEIGHT : node.height, // Explicit height for transition
+                  height: node.height, // Use node.height from layout
                   marginLeft: -node.width / 2, // Centering
-                  marginTop: - (isSelected ? EXPANDED_HEIGHT : node.height) / 2, // Centering vertically
-                  // NOTE: If we center vertically, expanding grows both up and down.
-                  // The layout algorithm calculates Y as center. 
-                  // If we want it to grow down only visually relative to previous state, we'd need top-left anchor.
-                  // But our layout computes centers. 
-                  // Because we updated node.y in layout to account for the new height, centering here is correct.
+                  marginTop: -node.height / 2, // Centering vertically
                   padding: isSelected ? '1.5rem' : '1rem'
                 }}
               >
@@ -645,7 +651,7 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
                         className={`
                             overflow-y-auto w-full mt-3 pt-3 border-t border-slate-100 dark:border-slate-700
                             transition-opacity duration-300 delay-100
-                            ${!isRoot && isSelected ? 'opacity-100 visible h-full' : 'opacity-0 invisible h-0'}
+                            ${!isRoot && isSelected ? 'opacity-100 visible flex-1' : 'opacity-0 invisible h-0'}
                         `}
                     >
                          {!isRoot && (

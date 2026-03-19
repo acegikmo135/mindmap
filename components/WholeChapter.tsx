@@ -23,7 +23,7 @@ const WholeChapter: React.FC<WholeChapterProps> = ({ chapter }) => {
   };
 
   useEffect(() => {
-    fetchExplanation();
+    // fetchExplanation(); // Removed automatic generation on mount
   }, [chapter]);
 
   return (

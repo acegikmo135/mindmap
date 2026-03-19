@@ -86,7 +86,7 @@ const DoubtSolver: React.FC<DoubtSolverProps> = ({ chapterId }) => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] md:h-[calc(100vh-2rem)] w-full max-w-4xl mx-auto bg-white dark:bg-slate-900 md:border-x border-slate-100 dark:border-slate-800 shadow-sm transition-colors relative">
+    <div className="flex flex-col h-full w-full bg-white dark:bg-slate-900 transition-colors relative">
       <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-10 flex justify-between items-center">
         <div>
           <h2 className="font-serif font-bold text-slate-800 dark:text-slate-100">Doubt Solver</h2>
@@ -104,7 +104,7 @@ const DoubtSolver: React.FC<DoubtSolverProps> = ({ chapterId }) => {
               className={`max-w-[90%] md:max-w-[85%] p-3 md:p-4 rounded-2xl text-sm leading-relaxed
               ${msg.role === 'user' 
                 ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tr-none' 
-                : 'bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm rounded-tl-none'}`}
+                : 'bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 rounded-tl-none'}`}
             >
               <MarkdownRenderer content={msg.content} />
             </div>

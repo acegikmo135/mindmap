@@ -280,7 +280,7 @@ const AuthenticatedApp: React.FC = () => {
         return <ActiveRecall concept={activeConcept} onComplete={handleRecallComplete} />;
       case AppMode.FLASHCARDS:
         const chapterCards = flashcards.filter(f => f.chapterId === activeChapter.id);
-        return <Flashcards cards={chapterCards} onAddCard={handleAddFlashcard} />;
+        return <Flashcards cards={chapterCards} chapter={activeChapter} onAddCard={handleAddFlashcard} />;
       case AppMode.DOUBT_SOLVER:
         return <DoubtSolver chapterId={activeChapter.id} />;
       case AppMode.REVISION:
@@ -293,7 +293,7 @@ const AuthenticatedApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 flex font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden">
+    <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 flex font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300 overflow-hidden">
       {showProfilePopup && <ProfilePopup onSave={handleSaveProfilePopup} />}
       
       {/* Mobile Header */}
@@ -330,9 +330,10 @@ const AuthenticatedApp: React.FC = () => {
         onSignOut={signOut}
       />
       
-      <main className="flex-1 md:ml-64 pt-16 md:pt-0 min-h-[100dvh]">
-        <div className="h-full overflow-y-auto p-4 md:p-8 scroll-smooth">
-           <div className="max-w-7xl mx-auto">
+      <main className="flex-1 md:ml-64 flex flex-col h-full overflow-hidden">
+        <div className="md:hidden h-16 shrink-0" /> {/* Spacer for mobile header */}
+        <div className={`flex-1 min-h-0 scroll-smooth ${currentMode === AppMode.DOUBT_SOLVER ? 'overflow-hidden' : 'overflow-y-auto p-4 md:p-8'}`}>
+           <div className={currentMode === AppMode.DOUBT_SOLVER ? 'h-full flex flex-col' : 'max-w-7xl mx-auto'}>
                {renderContent()}
            </div>
         </div>

@@ -1,20 +1,39 @@
 import React, { useState } from 'react';
-import { Flashcard } from '../types';
-import { ThumbsUp, HelpCircle } from 'lucide-react';
+import { Flashcard, Chapter } from '../types';
+import { ThumbsUp, HelpCircle, Sparkles, Loader2 } from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
+import { generateFlashcards } from '../services/geminiService';
 
 interface FlashcardsProps {
   cards: Flashcard[];
+  chapter: Chapter;
   onAddCard?: (front: string, back: string) => void;
 }
 
-const Flashcards: React.FC<FlashcardsProps> = ({ cards, onAddCard }) => {
+const Flashcards: React.FC<FlashcardsProps> = ({ cards, chapter, onAddCard }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [newFront, setNewFront] = useState('');
   const [newBack, setNewBack] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateAI = async () => {
+    if (!onAddCard) return;
+    setIsGenerating(true);
+    try {
+      const concepts = chapter.concepts.map(c => c.title);
+      const aiCards = await generateFlashcards(chapter.title, concepts);
+      for (const card of aiCards) {
+        onAddCard(card.front, card.back);
+      }
+    } catch (error) {
+      console.error("AI Generation Error:", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,12 +102,22 @@ const Flashcards: React.FC<FlashcardsProps> = ({ cards, onAddCard }) => {
         </div>
         <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200">No Cards Due</h3>
         <p className="text-sm">You're all caught up! Check back later.</p>
-        <button 
-          onClick={() => setShowCreate(true)}
-          className="mt-6 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-        >
-          Create Manual Card
-        </button>
+        <div className="flex gap-3 mt-6">
+          <button 
+            onClick={() => setShowCreate(true)}
+            className="px-6 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          >
+            Create Manual Card
+          </button>
+          <button 
+            onClick={handleGenerateAI}
+            disabled={isGenerating}
+            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            Generate 5 AI Cards
+          </button>
+        </div>
       </div>
     );
   }
@@ -136,12 +165,22 @@ const Flashcards: React.FC<FlashcardsProps> = ({ cards, onAddCard }) => {
     <div className="max-w-xl mx-auto py-12 px-4">
       <div className="flex justify-between items-center mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium">
         <span>Card {currentIndex + 1} of {cards.length}</span>
-        <button 
-          onClick={() => setShowCreate(true)}
-          className="text-primary-600 dark:text-primary-400 hover:underline"
-        >
-          + Add Card
-        </button>
+        <div className="flex gap-4 items-center">
+          <button 
+            onClick={handleGenerateAI}
+            disabled={isGenerating}
+            className="flex items-center gap-1.5 text-primary-600 dark:text-primary-400 hover:underline disabled:opacity-50"
+          >
+            {isGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            Generate 5 AI Cards
+          </button>
+          <button 
+            onClick={() => setShowCreate(true)}
+            className="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            + Add Card
+          </button>
+        </div>
       </div>
 
       <div 
