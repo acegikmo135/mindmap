@@ -318,14 +318,6 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
 
   // --- Event Handlers ---
 
-  const handleWheel = (e: React.WheelEvent) => {
-    if(e.ctrlKey || e.metaKey) {
-        e.preventDefault(); 
-        const newScale = Math.min(Math.max(0.2, scale - e.deltaY * 0.001), 2);
-        setScale(newScale);
-    }
-  };
-
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.mindmap-node')) return;
     setIsDragging(true);
@@ -344,8 +336,58 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    const zoomFactor = 1 - e.deltaY * 0.001;
+    const newScale = Math.min(Math.max(scale * zoomFactor, 0.1), 5);
+    setScale(newScale);
+  };
+
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
+
+  const getTouchDistance = (touches: React.TouchList) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).closest('.mindmap-node')) return;
+    
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y });
+      setLastTouchDistance(null);
+    } else if (e.touches.length === 2) {
+      setIsDragging(false);
+      setLastTouchDistance(getTouchDistance(e.touches));
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDragging) {
+      const touch = e.touches[0];
+      setPosition({
+        x: touch.clientX - dragStart.x,
+        y: touch.clientY - dragStart.y
+      });
+    } else if (e.touches.length === 2 && lastTouchDistance !== null) {
+      const distance = getTouchDistance(e.touches);
+      const delta = distance - lastTouchDistance;
+      const zoomFactor = 1 + delta * 0.01;
+      const newScale = Math.min(Math.max(scale * zoomFactor, 0.1), 5);
+      setScale(newScale);
+      setLastTouchDistance(distance);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setLastTouchDistance(null);
+  };
   
-  const handleNodeClick = (e: React.MouseEvent, nodeId: string) => {
+  const handleNodeClick = (e: React.MouseEvent | React.TouchEvent, nodeId: string) => {
       e.stopPropagation();
       setSelectedNodeId(prev => prev === nodeId ? null : nodeId);
   };
@@ -353,62 +395,62 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
   // --- Configuration Screen Render ---
   if (!config || !generatedMapData) {
     return (
-      <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-serif font-bold text-slate-800 dark:text-white mb-4">
+      <div className="max-w-4xl mx-auto py-6 md:py-12 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-800 dark:text-white mb-4">
              Generate Mind Map
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+          <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto text-sm md:text-base">
              Customize how you want to visualize the connections in this chapter.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
            {/* Detail Level */}
-           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
+           <div className="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <div className="flex items-center gap-3 mb-4 md:mb-6">
                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
-                    <Layers className="w-6 h-6" />
+                    <Layers className="w-5 h-5 md:w-6 md:h-6" />
                  </div>
-                 <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Detail Level</h3>
+                 <h3 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100">Detail Level</h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                  {(['BRIEF', 'STANDARD', 'DETAILED'] as DetailLevel[]).map(level => (
                     <button
                         key={level}
                         onClick={() => setConfig(prev => ({ complexity: prev?.complexity || 'INTERMEDIATE', detail: level }))}
-                        className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all group
+                        className={`w-full flex items-center justify-between p-3 md:p-4 rounded-xl border transition-all group
                         ${config?.detail === level 
                             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500' 
                             : 'border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10'}`}
                     >
-                        <span className="font-medium text-slate-700 dark:text-slate-300 capitalize">{level.toLowerCase()}</span>
-                        {config?.detail === level && <Check className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
+                        <span className="font-medium text-slate-700 dark:text-slate-300 capitalize text-sm md:text-base">{level.toLowerCase()}</span>
+                        {config?.detail === level && <Check className="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />}
                     </button>
                  ))}
               </div>
            </div>
 
            {/* Complexity */}
-           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
+           <div className="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <div className="flex items-center gap-3 mb-4 md:mb-6">
                  <div className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-lg">
-                    <BrainCircuit className="w-6 h-6" />
+                    <BrainCircuit className="w-5 h-5 md:w-6 md:h-6" />
                  </div>
-                 <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Complexity</h3>
+                 <h3 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100">Complexity</h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                  {(['BASIC', 'INTERMEDIATE', 'ADVANCED'] as Complexity[]).map(comp => (
                     <button
                         key={comp}
                         onClick={() => setConfig(prev => ({ detail: prev?.detail || 'STANDARD', complexity: comp }))}
-                        className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all group
+                        className={`w-full flex items-center justify-between p-3 md:p-4 rounded-xl border transition-all group
                         ${config?.complexity === comp 
                             ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 ring-1 ring-purple-500' 
                             : 'border-slate-200 dark:border-slate-700 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10'}`}
                     >
-                         <span className="font-medium text-slate-700 dark:text-slate-300 capitalize">{comp.toLowerCase()}</span>
-                         {config?.complexity === comp && <Check className="w-5 h-5 text-purple-600 dark:text-purple-400" />}
+                         <span className="font-medium text-slate-700 dark:text-slate-300 capitalize text-sm md:text-base">{comp.toLowerCase()}</span>
+                         {config?.complexity === comp && <Check className="w-4 h-4 md:w-5 md:h-5 text-purple-600 dark:text-purple-400" />}
                     </button>
                  ))}
               </div>
@@ -419,7 +461,7 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
             <button 
                 onClick={handleGenerate}
                 disabled={!config || isLoading}
-                className={`flex items-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all
+                className={`w-full md:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all
                 ${(!config || isLoading) ? 'opacity-50 cursor-not-allowed transform-none' : ''}`}
             >
                 {isLoading ? (
@@ -437,7 +479,7 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
 
             {history.length > 0 && (
               <div className="w-full max-w-2xl">
-                <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Recent History</h3>
+                <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Recent History</h3>
                 <div className="grid gap-2">
                   {history.map(map => (
                     <button
@@ -468,41 +510,41 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
   }
 
   return (
-    <div className="relative h-[calc(100vh-6rem)] w-full overflow-hidden bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner select-none animate-in fade-in duration-700">
+    <div className="relative h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner select-none animate-in fade-in duration-700">
       
       {/* Controls */}
-      <div className="absolute top-4 right-4 z-30 flex flex-col gap-2 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-md border border-slate-100 dark:border-slate-700">
+      <div className="absolute top-4 right-4 z-30 flex flex-row md:flex-col gap-2 bg-white dark:bg-slate-800 p-1 md:p-2 rounded-lg shadow-md border border-slate-100 dark:border-slate-700">
         <button onClick={() => setScale(s => Math.min(s + 0.2, 2))} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300" title="Zoom In">
-          <ZoomIn className="w-5 h-5" />
+          <ZoomIn className="w-4 h-4 md:w-5 md:h-5" />
         </button>
         <button onClick={() => setScale(s => Math.max(s - 0.2, 0.2))} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300" title="Zoom Out">
-          <ZoomOut className="w-5 h-5" />
+          <ZoomOut className="w-4 h-4 md:w-5 md:h-5" />
         </button>
         <button onClick={() => { setScale(0.8); setPosition({ x: containerRef.current ? containerRef.current.clientWidth/2 : 0, y: 100 }); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300" title="Fit View">
-          <Maximize2 className="w-5 h-5" />
+          <Maximize2 className="w-4 h-4 md:w-5 md:h-5" />
         </button>
-        <div className="h-px bg-slate-200 dark:bg-slate-700 my-1" />
+        <div className="hidden md:block h-px bg-slate-200 dark:bg-slate-700 my-1" />
         <button 
             onClick={handleDownload}
             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300" 
             title="Download as Image"
         >
-            <Download className="w-5 h-5" />
+            <Download className="w-4 h-4 md:w-5 md:h-5" />
         </button>
         <button 
             onClick={() => { setConfig(null); setGeneratedMapData(null); }} 
             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300" 
             title="Reconfigure"
         >
-            <Settings2 className="w-5 h-5" />
+            <Settings2 className="w-4 h-4 md:w-5 md:h-5" />
         </button>
       </div>
 
-      <div className="absolute top-4 left-4 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none">
-        <h2 className="font-serif font-bold text-slate-800 dark:text-slate-100">{chapter.title}</h2>
-        <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1"><Layers className="w-3 h-3"/> {config.detail}</span>
-            <span className="flex items-center gap-1"><BrainCircuit className="w-3 h-3"/> {config.complexity}</span>
+      <div className="absolute top-4 left-4 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur p-3 md:p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm pointer-events-none max-w-[200px] md:max-w-none">
+        <h2 className="font-serif font-bold text-slate-800 dark:text-slate-100 text-sm md:text-base truncate">{chapter.title}</h2>
+        <div className="flex items-center gap-3 mt-1 text-[10px] md:text-xs text-slate-500 dark:text-slate-400">
+            <span className="flex items-center gap-1"><Layers className="w-2.5 h-2.5 md:w-3 md:h-3"/> {config.detail}</span>
+            <span className="flex items-center gap-1"><BrainCircuit className="w-2.5 h-2.5 md:w-3 md:h-3"/> {config.complexity}</span>
         </div>
       </div>
 
@@ -514,6 +556,9 @@ const MindMap: React.FC<MindMapProps> = ({ chapter }) => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
         <div 

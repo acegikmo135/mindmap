@@ -5,12 +5,75 @@ import MarkdownRenderer from './MarkdownRenderer';
 
 interface FlashcardsProps {
   cards: Flashcard[];
+  onAddCard?: (front: string, back: string) => void;
 }
 
-const Flashcards: React.FC<FlashcardsProps> = ({ cards }) => {
+const Flashcards: React.FC<FlashcardsProps> = ({ cards, onAddCard }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newFront, setNewFront] = useState('');
+  const [newBack, setNewBack] = useState('');
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newFront.trim() && newBack.trim() && onAddCard) {
+      onAddCard(newFront, newBack);
+      setNewFront('');
+      setNewBack('');
+      setShowCreate(false);
+    }
+  };
+
+  if (showCreate) {
+    return (
+      <div className="max-w-xl mx-auto py-12 px-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl">
+          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-6">Create New Flashcard</h3>
+          <form onSubmit={handleCreate} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Front (Question)</label>
+              <textarea
+                value={newFront}
+                onChange={(e) => setNewFront(e.target.value)}
+                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
+                rows={3}
+                placeholder="Enter the question or term..."
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Back (Answer)</label>
+              <textarea
+                value={newBack}
+                onChange={(e) => setNewBack(e.target.value)}
+                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
+                rows={3}
+                placeholder="Enter the answer or explanation..."
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowCreate(false)}
+                className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors"
+              >
+                Create Card
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   if (!cards || cards.length === 0) {
     return (
@@ -20,6 +83,12 @@ const Flashcards: React.FC<FlashcardsProps> = ({ cards }) => {
         </div>
         <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200">No Cards Due</h3>
         <p className="text-sm">You're all caught up! Check back later.</p>
+        <button 
+          onClick={() => setShowCreate(true)}
+          className="mt-6 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          Create Manual Card
+        </button>
       </div>
     );
   }
@@ -32,12 +101,20 @@ const Flashcards: React.FC<FlashcardsProps> = ({ cards }) => {
         </div>
         <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Session Complete!</h3>
         <p className="text-sm mt-2">You've reviewed {cards.length} cards.</p>
-        <button 
-          onClick={() => { setCompleted(false); setCurrentIndex(0); }}
-          className="mt-6 px-6 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
-        >
-          Review Again
-        </button>
+        <div className="flex gap-3 mt-6">
+          <button 
+            onClick={() => { setCompleted(false); setCurrentIndex(0); }}
+            className="px-6 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
+          >
+            Review Again
+          </button>
+          <button 
+            onClick={() => setShowCreate(true)}
+            className="px-6 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          >
+            Add More
+          </button>
+        </div>
       </div>
     );
   }
@@ -59,7 +136,12 @@ const Flashcards: React.FC<FlashcardsProps> = ({ cards }) => {
     <div className="max-w-xl mx-auto py-12 px-4">
       <div className="flex justify-between items-center mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium">
         <span>Card {currentIndex + 1} of {cards.length}</span>
-        <span>Spaced Repetition</span>
+        <button 
+          onClick={() => setShowCreate(true)}
+          className="text-primary-600 dark:text-primary-400 hover:underline"
+        >
+          + Add Card
+        </button>
       </div>
 
       <div 

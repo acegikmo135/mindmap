@@ -20,18 +20,35 @@ export const initGemini = () => {
 
 const LATEX_INSTRUCTION = "ALWAYS use LaTeX format for ALL mathematical expressions, equations, and variables. Enclose them in single dollar signs (e.g., $x^2 + y^2 = z^2$). Use **bold** for key terms.";
 
-export const explainChapter = async (chapter: Chapter): Promise<string> => {
+export const explainChapter = async (chapter: Chapter, length: string = 'STANDARD', depth: string = 'INTERMEDIATE'): Promise<string> => {
     if (!ai) initGemini();
     if (!ai) return "AI Service Unavailable";
 
     try {
         const conceptList = chapter.concepts.map(c => c.title).join(", ");
+        
+        const lengthInstruction = {
+            'SHORT': 'Keep the explanation very concise and brief.',
+            'STANDARD': 'Provide a balanced explanation with moderate detail.',
+            'LONG': 'Provide a very detailed and comprehensive explanation.'
+        }[length] || 'Provide a balanced explanation.';
+
+        const depthInstruction = {
+            'BASIC': 'Use very simple language and focus only on core concepts.',
+            'INTERMEDIATE': 'Use standard 8th-grade language with some technical terms explained.',
+            'ADVANCED': 'Go deeper into the "why" and "how", including more advanced connections.'
+        }[depth] || 'Use standard 8th-grade language.';
+
         const response = await ai.models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: `Explain the chapter "${chapter.title}" for an 8th-grade student.
             
+            Configuration:
+            - Length: ${length} (${lengthInstruction})
+            - Depth: ${depth} (${depthInstruction})
+            
             Instructions:
-            1. Use very simple, easy-to-understand language. Avoid complex jargon.
+            1. Use simple, easy-to-understand language.
             2. Cover these concepts: ${conceptList}.
             3. ${LATEX_INSTRUCTION}
             4. Use bullet points and headers to make it readable.

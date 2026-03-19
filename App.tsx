@@ -152,6 +152,22 @@ const AuthenticatedApp: React.FC = () => {
     setIsSidebarOpen(false);
   };
 
+  const handleAddFlashcard = (front: string, back: string) => {
+    if (!activeChapter) return;
+    
+    const newCard: Flashcard = {
+      id: `fc_${Date.now()}`,
+      chapterId: activeChapter.id,
+      front,
+      back,
+      mastery: 'GOOD',
+      nextReviewDate: new Date(),
+      conceptId: activeConceptId || 'manual'
+    };
+    
+    setFlashcards(prev => [...prev, newCard]);
+  };
+
   const handleRecallComplete = (success: boolean) => {
     if (success) {
       if (activeChapter && activeConcept) {
@@ -264,7 +280,7 @@ const AuthenticatedApp: React.FC = () => {
         return <ActiveRecall concept={activeConcept} onComplete={handleRecallComplete} />;
       case AppMode.FLASHCARDS:
         const chapterCards = flashcards.filter(f => f.chapterId === activeChapter.id);
-        return <Flashcards cards={chapterCards} />;
+        return <Flashcards cards={chapterCards} onAddCard={handleAddFlashcard} />;
       case AppMode.DOUBT_SOLVER:
         return <DoubtSolver chapterId={activeChapter.id} />;
       case AppMode.REVISION:

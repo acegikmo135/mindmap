@@ -11,21 +11,19 @@ interface WholeChapterProps {
 const WholeChapter: React.FC<WholeChapterProps> = ({ chapter }) => {
   const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [length, setLength] = useState<'SHORT' | 'STANDARD' | 'LONG'>('STANDARD');
+  const [depth, setDepth] = useState<'BASIC' | 'INTERMEDIATE' | 'ADVANCED'>('INTERMEDIATE');
+
+  const fetchExplanation = async () => {
+    if (!chapter) return;
+    setLoading(true);
+    const text = await explainChapter(chapter, length, depth);
+    setContent(text);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    let mounted = true;
-    const fetchExplanation = async () => {
-      if (!chapter) return;
-      setLoading(true);
-      const text = await explainChapter(chapter);
-      if (mounted) {
-        setContent(text);
-        setLoading(false);
-      }
-    };
-
     fetchExplanation();
-    return () => { mounted = false; };
   }, [chapter]);
 
   return (
@@ -37,6 +35,53 @@ const WholeChapter: React.FC<WholeChapterProps> = ({ chapter }) => {
         </div>
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-slate-800 dark:text-slate-100">{chapter.title}</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-2">Comprehensive summary and conceptual overview for 8th Grade.</p>
+        
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Explanation Length</label>
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+              {(['SHORT', 'STANDARD', 'LONG'] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLength(l)}
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    length === l 
+                      ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' 
+                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Explanation Depth</label>
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+              {(['BASIC', 'INTERMEDIATE', 'ADVANCED'] as const).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDepth(d)}
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    depth === d 
+                      ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm' 
+                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={fetchExplanation}
+          disabled={loading}
+          className="mt-4 w-full md:w-auto px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+          Regenerate Explanation
+        </button>
       </div>
 
       {loading ? (
