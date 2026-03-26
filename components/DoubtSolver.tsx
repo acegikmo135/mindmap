@@ -16,7 +16,7 @@ const DoubtSolver: React.FC<DoubtSolverProps> = ({ chapterId }) => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load chat history
   useEffect(() => {
@@ -40,10 +40,14 @@ const DoubtSolver: React.FC<DoubtSolverProps> = ({ chapterId }) => {
   }, [user, chapterId]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   };
 
-  useEffect(scrollToBottom, [messages, isLoadingHistory]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoadingHistory]);
 
   const handleSend = async () => {
     if (!input.trim() || !user) return;
@@ -86,15 +90,19 @@ const DoubtSolver: React.FC<DoubtSolverProps> = ({ chapterId }) => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-white dark:bg-slate-900 transition-colors relative">
-      <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-10 flex justify-between items-center">
+    <div className="flex flex-col flex-1 min-h-0 w-full bg-white dark:bg-slate-900 transition-colors relative overflow-hidden">
+      {/* Header - Only visible on desktop since App.tsx has mobile header */}
+      <div className="hidden md:flex p-4 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-10 justify-between items-center shrink-0">
         <div>
           <h2 className="font-serif font-bold text-slate-800 dark:text-slate-100">Doubt Solver</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">Context aware • LaTeX Supported</p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-6">
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-3 md:p-6 space-y-6 scroll-smooth overscroll-contain"
+      >
         {messages.map((msg) => (
           <div key={msg.id} className={`flex items-start gap-2 md:gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
             <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-slate-200 dark:bg-slate-700' : 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400'}`}>
@@ -116,10 +124,9 @@ const DoubtSolver: React.FC<DoubtSolverProps> = ({ chapterId }) => {
             Thinking...
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 md:p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky bottom-0">
+      <div className="p-3 md:p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
         <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 p-1.5 md:p-2 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-primary-300 focus-within:ring-4 focus-within:ring-primary-50 dark:focus-within:ring-primary-900/20 transition-all">
           <input
             type="text"

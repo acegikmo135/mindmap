@@ -2,6 +2,9 @@
 
 A structured learning platform for NCERT students with AI-powered mind maps, active recall, and doubt solving.
 
+> [!TIP]
+> **Check out [ABOUT.md](./ABOUT.md)** for a deep dive into the features, tech stack, and cognitive science behind CogniStruct.
+
 ## Local Development
 
 1. **Clone the repository**

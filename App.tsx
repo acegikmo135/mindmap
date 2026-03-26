@@ -293,7 +293,7 @@ const AuthenticatedApp: React.FC = () => {
   };
 
   return (
-    <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 flex font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300 overflow-hidden">
+    <div className="fixed inset-0 bg-slate-50 dark:bg-slate-950 flex font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300 overflow-hidden">
       {showProfilePopup && <ProfilePopup onSave={handleSaveProfilePopup} />}
       
       {/* Mobile Header */}
@@ -305,7 +305,7 @@ const AuthenticatedApp: React.FC = () => {
           <Menu className="w-6 h-6" />
         </button>
         <span className="font-serif font-bold text-lg text-slate-800 dark:text-white truncate max-w-[200px]">
-           {activeChapter ? activeChapter.title : 'CogniStruct'}
+           {currentMode === AppMode.DOUBT_SOLVER ? 'Doubt Solver' : (activeChapter ? activeChapter.title : 'CogniStruct')}
         </span>
         <div className="w-8" />
       </div>
@@ -330,10 +330,10 @@ const AuthenticatedApp: React.FC = () => {
         onSignOut={signOut}
       />
       
-      <main className="flex-1 md:ml-64 flex flex-col h-full overflow-hidden">
+      <main className="flex-1 md:ml-64 flex flex-col overflow-hidden relative">
         <div className="md:hidden h-16 shrink-0" /> {/* Spacer for mobile header */}
-        <div className={`flex-1 min-h-0 scroll-smooth ${currentMode === AppMode.DOUBT_SOLVER ? 'overflow-hidden' : 'overflow-y-auto p-4 md:p-8'}`}>
-           <div className={currentMode === AppMode.DOUBT_SOLVER ? 'h-full flex flex-col' : 'max-w-7xl mx-auto'}>
+        <div className={`flex-1 min-h-0 flex flex-col scroll-smooth ${currentMode === AppMode.DOUBT_SOLVER ? 'overflow-hidden' : 'overflow-y-auto p-4 md:p-8'}`}>
+           <div className={currentMode === AppMode.DOUBT_SOLVER ? 'flex-1 min-h-0 flex flex-col' : 'max-w-7xl mx-auto'}>
                {renderContent()}
            </div>
         </div>
