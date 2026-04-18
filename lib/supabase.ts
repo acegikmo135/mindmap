@@ -9,4 +9,8 @@ if (!isSupabaseConfigured) {
   console.warn('Missing Supabase environment variables. Authentication and database features will not work.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Use placeholders if not configured to prevent createClient from throwing an error and crashing the app on load
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder'
+);
