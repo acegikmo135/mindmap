@@ -1,8 +1,9 @@
 import React from 'react';
 import { AppMode, Theme } from '../types';
-import { 
-  LayoutDashboard, Network, BrainCircuit, Library, MessageCircleQuestion, 
-  RotateCcw, BarChart3, Sun, Moon, Book, ChevronLeft, BookOpenText, X, LogOut, User, Users
+import {
+  LayoutDashboard, Network, BrainCircuit, Library, MessageCircleQuestion,
+  RotateCcw, BarChart3, Sun, Moon, Book, ChevronLeft, BookOpenText, X, LogOut, User, Users,
+  Trophy, Star
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -15,19 +16,22 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onSignOut?: () => void;
+  totalPoints?: number;
+  isAdmin?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  currentMode, setMode, theme, setTheme, onGoHome, activeChapterTitle, isOpen, onClose, onSignOut 
+const Sidebar: React.FC<SidebarProps> = ({
+  currentMode, setMode, theme, setTheme, onGoHome, activeChapterTitle, isOpen, onClose, onSignOut, totalPoints, isAdmin
 }) => {
   const menuItems = [
-    { mode: AppMode.DASHBOARD, icon: LayoutDashboard, label: 'Breakdown' },
-    { mode: AppMode.WHOLE_CHAPTER, icon: BookOpenText, label: 'Understand Chapter' },
-    { mode: AppMode.MIND_MAP, icon: Network, label: 'Mind Map' },
-    { mode: AppMode.ACTIVE_RECALL, icon: BrainCircuit, label: 'Active Recall' },
-    { mode: AppMode.FLASHCARDS, icon: Library, label: 'Flashcards' },
-    { mode: AppMode.DOUBT_SOLVER, icon: MessageCircleQuestion, label: 'Doubt Solver' },
-    { mode: AppMode.REVISION, icon: RotateCcw, label: 'Revision Mode' },
+    { mode: AppMode.DASHBOARD,     icon: LayoutDashboard,        label: 'Breakdown' },
+    { mode: AppMode.WHOLE_CHAPTER, icon: BookOpenText,            label: 'Understand Chapter' },
+    { mode: AppMode.MIND_MAP,      icon: Network,                 label: 'Mind Map' },
+    { mode: AppMode.ACTIVE_RECALL, icon: BrainCircuit,            label: 'Active Recall' },
+    { mode: AppMode.FLASHCARDS,    icon: Library,                 label: 'Flashcards' },
+    { mode: AppMode.DOUBT_SOLVER,  icon: MessageCircleQuestion,   label: 'Doubt Solver' },
+    { mode: AppMode.REVISION,      icon: RotateCcw,               label: 'Revision Mode' },
+    { mode: AppMode.QUIZ,          icon: Trophy,                  label: 'Quiz' },
   ];
 
   return (
@@ -111,19 +115,21 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </button>
                 ))}
 
-                <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
-                <button
-                    onClick={() => setMode(AppMode.ADMIN)}
-                    className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
-                    ${currentMode === AppMode.ADMIN
-                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                        : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                >
-                    <BarChart3 className="w-5 h-5" />
-                    <span className="font-medium text-sm">Teacher View</span>
-                </button>
-                </div>
+                {isAdmin && (
+                  <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                        onClick={() => setMode(AppMode.ADMIN)}
+                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
+                        ${currentMode === AppMode.ADMIN
+                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                            : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                    >
+                        <BarChart3 className="w-5 h-5" />
+                        <span className="font-medium text-sm">Teacher View</span>
+                    </button>
+                  </div>
+                )}
             </>
         ) : (
              <div className="px-4 text-center text-slate-400 dark:text-slate-500 mt-10">
@@ -132,7 +138,20 @@ const Sidebar: React.FC<SidebarProps> = ({
              </div>
         )}
         
-        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1">
+
+          {/* Points badge */}
+          {(totalPoints ?? 0) > 0 && (
+            <button
+              onClick={() => setMode(AppMode.LEADERBOARD)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-yellow-50 dark:bg-yellow-900/10 hover:bg-yellow-100 dark:hover:bg-yellow-900/20 transition-all mb-2"
+            >
+              <Star className="w-4 h-4 fill-yellow-500 text-yellow-500 shrink-0" />
+              <span className="font-bold text-sm text-yellow-700 dark:text-yellow-300">{totalPoints?.toLocaleString()} pts</span>
+              <span className="ml-auto text-[10px] text-yellow-500 font-medium">Leaderboard →</span>
+            </button>
+          )}
+
           <button
             onClick={onGoHome}
             className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
@@ -143,6 +162,18 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <BookOpenText className="w-5 h-5" />
             <span className="font-medium text-sm">Select Subject</span>
+          </button>
+
+          <button
+            onClick={() => setMode(AppMode.LEADERBOARD)}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
+            ${currentMode === AppMode.LEADERBOARD
+                ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Trophy className="w-5 h-5" />
+            <span className="font-medium text-sm">Leaderboard</span>
           </button>
 
           <button
@@ -168,7 +199,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <User className="w-5 h-5" />
             <span className="font-medium text-sm">Profile</span>
           </button>
-          
+
           <button
             onClick={onSignOut}
             className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200"

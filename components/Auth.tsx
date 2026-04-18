@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2, AlertCircle, User, BookOpen } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { containsProfanity } from '../utils/profanity';
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -28,6 +29,11 @@ const Auth: React.FC = () => {
           setLoading(false);
           return;
         }
+        if (containsProfanity(fullName)) {
+          setError('Please use your real name. Inappropriate names are not allowed.');
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -42,7 +48,16 @@ const Auth: React.FC = () => {
         // The user is automatically signed in by Supabase after signup if email confirmation is off
       }
     } catch (err: any) {
-      setError(err.message);
+      // Normalize error messages to prevent user enumeration and avoid
+      // leaking internal Supabase error details to the client.
+      const msg: string = err?.message ?? '';
+      if (isLogin) {
+        setError('Invalid email or password. Please try again.');
+      } else if (msg.toLowerCase().includes('password')) {
+        setError('Password must be at least 6 characters.');
+      } else {
+        setError('Could not create account. Please check your details and try again.');
+      }
     } finally {
       setLoading(false);
     }

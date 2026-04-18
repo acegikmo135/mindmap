@@ -1,0 +1,213 @@
+version: "2"
+type: backend
+tech_stack:
+  - language: TypeScript
+  - framework: Vercel Serverless Functions (Node.js)
+  - database: Supabase (PostgreSQL) with Row Level Security
+  - auth: Supabase Auth (JWT Bearer tokens)
+  - ai: Google Gemini 2.5 Flash Lite via @google/genai
+  - notifications: OneSignal REST API
+  - frontend: React 19 + Vite SPA
+features:
+  - name: JWT Authentication Middleware
+    description: Every request to /api/gemini must include a valid Supabase JWT Bearer token. Server verifies token via supabase.auth.getUser(token). Returns 401 for missing or invalid tokens.
+    files:
+      - api/gemini.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Global auth gate — all actions share this endpoint. Unauthorized requests rejected before action routing.
+        auth_required: true
+        request_schema:
+          headers:
+            Authorization: "Bearer <supabase_jwt>"
+        response_schema:
+          "401": '{"error":"Unauthorized"}'
+
+  - name: Rate Limiting
+    description: In-memory rate limiter keyed by authenticated user ID. Allows 20 requests per 60-second window per user. Resets on cold start.
+    files:
+      - api/gemini.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Rate limit enforced after JWT verification. Returns 429 when limit exceeded.
+        auth_required: true
+        response_schema:
+          "429": '{"error":"Too many requests. Please wait a moment."}'
+
+  - name: CORS Enforcement
+    description: Restricts cross-origin requests to a Set of allowed origins derived from ALLOWED_ORIGIN, VERCEL_URL, VERCEL_BRANCH_URL env vars. Falls back to localhost:3000 in dev. Rejects requests from unknown origins.
+    files:
+      - api/gemini.ts
+    endpoints:
+      - method: OPTIONS
+        path: /api/gemini
+        description: CORS preflight handler
+        auth_required: false
+        response_schema:
+          "200": OK
+
+  - name: Chapter Explanation
+    description: Generates a full AI explanation of a chapter with configurable length and depth. Uses Gemini 2.5 Flash Lite. Returns markdown text with LaTeX math support.
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Generates chapter explanation
+        auth_required: true
+        request_schema:
+          body:
+            action: explain
+            chapterTitle: string
+            concepts: string
+            length: "SHORT | STANDARD | LONG"
+            depth: "BASIC | INTERMEDIATE | ADVANCED"
+        response_schema:
+          "200": '{"text":"<markdown explanation>"}'
+          "400": '{"error":"Missing action"}'
+
+  - name: Chapter Generation
+    description: Generates a structured learning chapter with 5-8 concepts from a topic and level. Returns JSON with title, subject, and concept array including estimatedMinutes and prerequisites.
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Generates chapter structure with concepts
+        auth_required: true
+        request_schema:
+          body:
+            action: generate-chapter
+            topic: string
+            level: string
+        response_schema:
+          "200": '{"text":"<JSON chapter object>"}'
+
+  - name: Mind Map Generation
+    description: Generates a hierarchical mind map JSON structure for a chapter. Returns rootTitle and nodes array with id, title, description, parentId, and type fields.
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Generates mind map data
+        auth_required: true
+        request_schema:
+          body:
+            action: generate-mindmap
+            chapterTitle: string
+            complexity: "BASIC | ADVANCED"
+            detail: "BRIEF | DETAILED"
+        response_schema:
+          "200": '{"text":"<JSON mindmap>"}'
+
+  - name: Active Recall Question Generation
+    description: Generates a single conceptual active recall question for a concept. Short, direct, no multiple choice.
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Generates active recall question
+        auth_required: true
+        request_schema:
+          body:
+            action: generate-question
+            conceptTitle: string
+            context: string
+        response_schema:
+          "200": '{"text":"<question string>"}'
+
+  - name: Flashcard Generation
+    description: Generates exactly 5 flashcards for a chapter. Each card has front (question/term) and back (answer/explanation).
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Generates 5 flashcards
+        auth_required: true
+        request_schema:
+          body:
+            action: generate-flashcards
+            chapterTitle: string
+            concepts: string[]
+        response_schema:
+          "200": '{"text":"<JSON array of flashcards>"}'
+
+  - name: Quiz Generation
+    description: Generates a quiz with 1-5 questions of type MCQ (4 options), FIB (fill-in-blank), MATCH (3 pairs), or MIXED. MCQ answer is full option text, FIB answer is the word/phrase, MATCH answer is empty string.
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Generates quiz questions
+        auth_required: true
+        request_schema:
+          body:
+            action: generate-quiz
+            chapterTitle: string
+            concepts: string[]
+            quizType: "MCQ | FIB | MATCH | MIXED"
+            count: number
+        response_schema:
+          "200": '{"text":"<JSON array of QuizQuestion>"}'
+
+  - name: Doubt Solver Chat
+    description: Conversational AI tutor. Handles subject-specific doubts with context-aware responses. User context passed in conversation history (not system instruction) to prevent prompt injection. Inappropriate/vulgar messages in any language rejected with polite redirect. Identity questions answered as CogniStruct made by Manthan.
+    files:
+      - api/gemini.ts
+      - services/geminiService.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Conversational doubt solver
+        auth_required: true
+        request_schema:
+          body:
+            action: doubt
+            history: "array of {role, content} (max 20)"
+            context: string
+        response_schema:
+          "200": '{"text":"<AI response>"}'
+          "400": '{"error":"No message to respond to."}'
+
+  - name: Push Notification Sending
+    description: Sends a OneSignal push notification to a target user. targetUserId validated as UUID v4. Requires VITE_ONESIGNAL_APP_ID and ONESIGNAL_REST_API_KEY env vars. Silently skips if not configured.
+    files:
+      - api/gemini.ts
+      - services/notifications.ts
+    endpoints:
+      - method: POST
+        path: /api/gemini
+        description: Sends push notification via OneSignal
+        auth_required: true
+        request_schema:
+          body:
+            action: send-notification
+            targetUserId: "UUID v4 string"
+            title: string
+            message: string
+        response_schema:
+          "200": '{"text":"<OneSignal response JSON>"}'
+          "400": '{"error":"Invalid targetUserId."}'
+
+known_limitations:
+  - issue: In-memory rate limiter resets on Vercel cold start
+    location: api/gemini.ts
+    impact: Rate limit window resets on each cold start; not persistent across function instances
+  - issue: No server-side profanity filtering on text inputs
+    location: api/gemini.ts
+    impact: Client-side profanity filter can be bypassed by direct API calls; AI system instruction handles vulgar chat messages but profile fields are only filtered client-side
+  - issue: Supabase anon key used for JWT verification
+    location: api/gemini.ts
+    impact: Intended by design; anon key is safe to use server-side for auth.getUser()

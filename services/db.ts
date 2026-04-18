@@ -1,5 +1,17 @@
 import { supabase } from '../lib/supabase';
-import { Chapter, Flashcard, Message, UserProfile, MindMapData, FriendRequest } from '../types';
+import { Chapter, Flashcard, Message, UserProfile, MindMapData, FriendRequest, QuizType, LeaderboardEntry } from '../types';
+
+// ── Chapter Explanation types ──────────────────────────────────────────────────
+export interface ChapterExplanation {
+  id: string;
+  user_id: string;
+  chapter_id: string;
+  chapter_title: string;
+  content: string;
+  length: string;
+  depth: string;
+  created_at: string;
+}
 
 export interface UserData {
   chapters: Chapter[];
@@ -163,4 +175,139 @@ export const updateFriendRequestStatus = async (requestId: string, status: 'ACCE
     .update({ status, reason })
     .eq('id', requestId);
   if (error) throw error;
+};
+
+// ── Chapter Explanations (last 5 per chapter, enforced by DB trigger) ──────────
+
+export const saveExplanation = async (
+  userId: string,
+  chapterId: string,
+  chapterTitle: string,
+  content: string,
+  length: string,
+  depth: string
+): Promise<void> => {
+  const { error } = await supabase
+    .from('chapter_explanations')
+    .insert({ user_id: userId, chapter_id: chapterId, chapter_title: chapterTitle, content, length, depth });
+
+  if (error) {
+    console.error('Error saving explanation:', error);
+  }
+};
+
+export const getExplanations = async (
+  userId: string,
+  chapterId: string
+): Promise<ChapterExplanation[]> => {
+  const { data, error } = await supabase
+    .from('chapter_explanations')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('chapter_id', chapterId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error('Error fetching explanations:', error);
+    return [];
+  }
+
+  return (data ?? []) as ChapterExplanation[];
+};
+
+// ── Quiz Results ───────────────────────────────────────────────────────────────
+
+export interface QuizResult {
+  id: string;
+  user_id: string;
+  chapter_id: string;
+  chapter_title: string;
+  quiz_type: string;
+  score: number;
+  total: number;
+  points_earned: number;
+  created_at: string;
+}
+
+export const getQuizHistory = async (userId: string, chapterId: string): Promise<QuizResult[]> => {
+  const { data, error } = await supabase
+    .from('quiz_results')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('chapter_id', chapterId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+  if (error) { console.error('Error fetching quiz history:', error); return []; }
+  return (data ?? []) as QuizResult[];
+};
+
+export const saveQuizResult = async (
+  userId: string,
+  chapterId: string,
+  chapterTitle: string,
+  quizType: QuizType,
+  score: number,
+  total: number,
+  pointsEarned: number
+): Promise<void> => {
+  const { error } = await supabase
+    .from('quiz_results')
+    .insert({ user_id: userId, chapter_id: chapterId, chapter_title: chapterTitle, quiz_type: quizType, score, total, points_earned: pointsEarned });
+  if (error) console.error('Error saving quiz result:', error);
+};
+
+export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, avatar_url, grade, total_points')
+    .order('total_points', { ascending: false })
+    .limit(50);
+  if (error) { console.error('Error fetching leaderboard:', error?.message); return []; }
+  return (data ?? []) as LeaderboardEntry[];
+};
+
+// ── Avatar Upload ──────────────────────────────────────────────────────────────
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const BUCKET = 'avatars';
+
+export type UploadAvatarResult =
+  | { ok: true; url: string }
+  | { ok: false; error: string };
+
+export const uploadAvatar = async (
+  userId: string,
+  file: File
+): Promise<UploadAvatarResult> => {
+  // ── Client-side validation ───────────────────────────────────────────────
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return { ok: false, error: 'Only JPG, PNG, WebP or GIF images are allowed.' };
+  }
+  if (file.size > MAX_AVATAR_BYTES) {
+    return { ok: false, error: 'Image must be smaller than 5 MB.' };
+  }
+
+  const ext  = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const path = `${userId}/avatar.${ext}`;
+
+  // ── Upload (upsert so re-uploads overwrite) ──────────────────────────────
+  const { error: uploadErr } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file, { upsert: true, contentType: file.type });
+
+  if (uploadErr) {
+    console.error('Avatar upload error:', uploadErr);
+    return { ok: false, error: uploadErr.message };
+  }
+
+  // ── Get public URL ───────────────────────────────────────────────────────
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  // Cache-bust so the browser shows the new image immediately
+  const url = `${data.publicUrl}?t=${Date.now()}`;
+
+  // ── Persist to profile ───────────────────────────────────────────────────
+  await updateUserProfile(userId, { avatar_url: url });
+
+  return { ok: true, url };
 };

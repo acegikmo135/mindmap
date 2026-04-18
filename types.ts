@@ -7,9 +7,29 @@ export enum AppMode {
   FLASHCARDS = 'FLASHCARDS',
   DOUBT_SOLVER = 'DOUBT_SOLVER',
   REVISION = 'REVISION',
+  QUIZ = 'QUIZ',
+  LEADERBOARD = 'LEADERBOARD',
   ADMIN = 'ADMIN',
   PROFILE = 'PROFILE',
   COMMUNITY = 'COMMUNITY'
+}
+
+export type QuizType = 'MCQ' | 'FIB' | 'MATCH' | 'MIXED';
+
+export interface QuizQuestion {
+  type: 'MCQ' | 'FIB' | 'MATCH';
+  question: string;
+  options?: string[];                          // MCQ: 4 choices
+  answer?: string;                             // MCQ & FIB correct answer
+  pairs?: { left: string; right: string }[];   // MATCH pairs (3)
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  full_name?: string;
+  avatar_url?: string;
+  grade?: string;
+  total_points: number;
 }
 
 export enum Theme {
@@ -20,11 +40,13 @@ export enum Theme {
 
 export interface UserProfile {
   id: string;
-  email: string;
+  email?: string;
   full_name?: string;
   avatar_url?: string;
   hobbies?: string;
   grade?: string;
+  total_points?: number;
+  is_admin?: boolean;
 }
 
 export interface MindMapData {

@@ -1,26 +1,30 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
-import ChapterBreakdown from './components/ChapterBreakdown';
-import MindMap from './components/MindMap';
-import ActiveRecall from './components/ActiveRecall';
-import Flashcards from './components/Flashcards';
-import DoubtSolver from './components/DoubtSolver';
-import RevisionMode from './components/RevisionMode';
-import AdminDashboard from './components/AdminDashboard';
-import SubjectSelection from './components/SubjectSelection';
-import WholeChapter from './components/WholeChapter';
 import Auth from './components/Auth';
-import Profile from './components/Profile';
-import Community from './components/Community';
 import ProfilePopup from './components/ProfilePopup';
+
+// Lazy-loaded — reduces initial bundle and speeds up first paint
+const ChapterBreakdown = lazy(() => import('./components/ChapterBreakdown'));
+const MindMap          = lazy(() => import('./components/MindMap'));
+const ActiveRecall     = lazy(() => import('./components/ActiveRecall'));
+const Flashcards       = lazy(() => import('./components/Flashcards'));
+const DoubtSolver      = lazy(() => import('./components/DoubtSolver'));
+const RevisionMode     = lazy(() => import('./components/RevisionMode'));
+const AdminDashboard   = lazy(() => import('./components/AdminDashboard'));
+const SubjectSelection = lazy(() => import('./components/SubjectSelection'));
+const WholeChapter     = lazy(() => import('./components/WholeChapter'));
+const Profile          = lazy(() => import('./components/Profile'));
+const Community        = lazy(() => import('./components/Community'));
+const Quiz             = lazy(() => import('./components/Quiz'));
+const Leaderboard      = lazy(() => import('./components/Leaderboard'));
 import { AppMode, Theme, Chapter, Flashcard, UserProfile } from './types';
 import { PREFILLED_CHAPTERS } from './constants';
-import { Menu, Loader2 } from 'lucide-react';
+import { Menu, Star } from 'lucide-react';
+
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { getUserData, saveUserData, getUserProfile, updateUserProfile } from './services/db';
 import { initOneSignal, setOneSignalExternalId } from './services/notifications';
 import { isSupabaseConfigured } from './lib/supabase';
-import { isGeminiConfigured } from './services/geminiService';
 import { AlertTriangle } from 'lucide-react';
 
 const ConfigError: React.FC = () => (
@@ -31,20 +35,20 @@ const ConfigError: React.FC = () => (
       </div>
       <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-white mb-4">Configuration Required</h2>
       <p className="text-slate-600 dark:text-slate-400 mb-6">
-        It looks like some environment variables are missing. Please ensure you have set up your <strong>Supabase</strong> and <strong>Gemini API</strong> keys in the settings.
+        Supabase environment variables are missing. Please set <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-sm">VITE_SUPABASE_URL</code> and <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-sm">VITE_SUPABASE_ANON_KEY</code> in your Vercel project settings.
       </p>
       <div className="space-y-3 text-left bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg text-sm">
         <div className="flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-green-500' : 'bg-red-500'}`} />
-          <span className="text-slate-700 dark:text-slate-300">Supabase Configuration</span>
+          <span className="text-slate-700 dark:text-slate-300">Supabase (VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isGeminiConfigured ? 'bg-green-500' : 'bg-red-500'}`} />
-          <span className="text-slate-700 dark:text-slate-300">Gemini API Configuration</span>
+          <div className="w-2 h-2 rounded-full bg-slate-400" />
+          <span className="text-slate-500 dark:text-slate-400">Gemini API key — set server-side as GEMINI_API_KEY</span>
         </div>
       </div>
       <p className="mt-6 text-xs text-slate-400">
-        After adding the keys, you may need to refresh the page.
+        After adding the keys, redeploy or refresh the page.
       </p>
     </div>
   </div>
@@ -234,13 +238,22 @@ const AuthenticatedApp: React.FC = () => {
     setShowProfilePopup(false);
   };
 
+  const ContentSkeleton = () => (
+    <div className="p-6 md:p-10 space-y-5 max-w-3xl mx-auto w-full">
+      <div className="w-48 h-8 skeleton" />
+      <div className="w-full h-4 skeleton" />
+      <div className="w-3/4 h-4 skeleton" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-28 skeleton rounded-2xl" style={{ opacity: 1 - i * 0.12 }} />
+        ))}
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     if (isLoadingData) {
-      return (
-        <div className="flex h-full items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
-        </div>
-      );
+      return <ContentSkeleton />;
     }
 
     if (currentMode === AppMode.PROFILE) {
@@ -249,6 +262,10 @@ const AuthenticatedApp: React.FC = () => {
 
     if (currentMode === AppMode.COMMUNITY) {
       return <Community profile={profile} />;
+    }
+
+    if (currentMode === AppMode.LEADERBOARD) {
+      return <Leaderboard />;
     }
 
     if (currentMode === AppMode.SUBJECT_SELECTION || !activeChapter) {
@@ -282,10 +299,14 @@ const AuthenticatedApp: React.FC = () => {
         const chapterCards = flashcards.filter(f => f.chapterId === activeChapter.id);
         return <Flashcards cards={chapterCards} chapter={activeChapter} onAddCard={handleAddFlashcard} />;
       case AppMode.DOUBT_SOLVER:
-        return <DoubtSolver chapterId={activeChapter.id} />;
+        return <DoubtSolver chapter={activeChapter} profile={profile} />;
       case AppMode.REVISION:
         return <RevisionMode chapter={activeChapter} />;
+      case AppMode.QUIZ:
+        return <Quiz chapter={activeChapter} onPointsEarned={(pts) => setProfile(p => p ? { ...p, total_points: (p.total_points ?? 0) + pts } : p)} />;
       case AppMode.ADMIN:
+        // L-1: Guard admin view — only users with is_admin=true on their profile can access this.
+        if (!profile?.is_admin) return <ChapterBreakdown chapter={activeChapter} onStartLearning={handleStartLearning} />;
         return <AdminDashboard />;
       default:
         return <ChapterBreakdown chapter={activeChapter} onStartLearning={handleStartLearning} />;
@@ -304,10 +325,20 @@ const AuthenticatedApp: React.FC = () => {
         >
           <Menu className="w-6 h-6" />
         </button>
-        <span className="font-serif font-bold text-lg text-slate-800 dark:text-white truncate max-w-[200px]">
+        <span className="font-serif font-bold text-lg text-slate-800 dark:text-white truncate max-w-[160px]">
            {currentMode === AppMode.DOUBT_SOLVER ? 'Doubt Solver' : (activeChapter ? activeChapter.title : 'CogniStruct')}
         </span>
-        <div className="w-8" />
+        {(profile?.total_points ?? 0) > 0 ? (
+          <button
+            onClick={() => handleModeChange(AppMode.LEADERBOARD)}
+            className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs font-bold shrink-0"
+          >
+            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+            {profile!.total_points}
+          </button>
+        ) : (
+          <div className="w-8" />
+        )}
       </div>
 
       {/* Overlay for mobile sidebar */}
@@ -318,9 +349,9 @@ const AuthenticatedApp: React.FC = () => {
         />
       )}
 
-      <Sidebar 
-        currentMode={currentMode} 
-        setMode={handleModeChange} 
+      <Sidebar
+        currentMode={currentMode}
+        setMode={handleModeChange}
         theme={theme}
         setTheme={setTheme}
         onGoHome={handleGoHome}
@@ -328,13 +359,25 @@ const AuthenticatedApp: React.FC = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         onSignOut={signOut}
+        totalPoints={profile?.total_points ?? 0}
+        isAdmin={profile?.is_admin === true}
       />
       
       <main className="flex-1 md:ml-64 flex flex-col overflow-hidden relative">
         <div className="md:hidden h-16 shrink-0" /> {/* Spacer for mobile header */}
-        <div className={`flex-1 min-h-0 flex flex-col scroll-smooth ${currentMode === AppMode.DOUBT_SOLVER ? 'overflow-hidden' : 'overflow-y-auto p-4 md:p-8'}`}>
-           <div className={currentMode === AppMode.DOUBT_SOLVER ? 'flex-1 min-h-0 flex flex-col' : 'max-w-7xl mx-auto'}>
-               {renderContent()}
+        <div className={`flex-1 min-h-0 flex flex-col scroll-smooth ${
+          currentMode === AppMode.DOUBT_SOLVER || currentMode === AppMode.MIND_MAP
+            ? 'overflow-hidden'
+            : 'overflow-y-auto p-4 md:p-8'
+        }`}>
+           <div className={
+             currentMode === AppMode.DOUBT_SOLVER || currentMode === AppMode.MIND_MAP
+               ? 'flex-1 min-h-0 flex flex-col'
+               : 'max-w-7xl mx-auto w-full'
+           }>
+               <Suspense fallback={<ContentSkeleton />}>
+                 {renderContent()}
+               </Suspense>
            </div>
         </div>
       </main>
@@ -359,8 +402,12 @@ const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5 bg-slate-50 dark:bg-slate-950 p-6">
+        <div className="w-16 h-16 skeleton rounded-2xl" />
+        <div className="space-y-2 w-48 text-center">
+          <div className="h-4 skeleton w-full" />
+          <div className="h-3 skeleton w-3/4 mx-auto" />
+        </div>
       </div>
     );
   }

@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "backendAuthType": "public",
+  "executionArgs": {
+    "projectName": "mindmap",
+    "projectPath": "C:\\Users\\kansa\\OneDrive\\Desktop\\Mind_map\\App\\mindmap",
+    "testIds": [],
+    "additionalInstruction": "This is a Vercel serverless backend. The main API endpoint is /api/gemini (POST). All requests require a valid Supabase JWT Bearer token in the Authorization header. Test authentication, rate limiting, CORS, all action types (explain, generate-chapter, generate-mindmap, generate-question, generate-flashcards, generate-quiz, doubt, send-notification), and input validation. Use port 3000.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-MK6W0b4zfvWW2fAUhdqi9uvtZ-jYsdAKkrCFRlil7Avu73Uld6KqN-5dSVdp41JSGAPeHC_tr2EXND6YhokECJtbMxp6BDS9gh6Hgqy9te4jmThZxXpGpLn4cHCUv1Tmb_k"
+    }
+  },
+  "serverPort": 55224,
+  "proxy": "http://2a7bd0c6-baa8-4582-b30a-4c13d1c3de7b:52hsZyiQC3pkVkTmFBapmyeDKzxFCAkV@tun.testsprite.com:8080"
+}

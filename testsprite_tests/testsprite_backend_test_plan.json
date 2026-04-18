@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "jwt authentication middleware verification",
+    "description": "Verify that all requests to POST /api/gemini require a valid Supabase JWT Bearer token. Requests without or with invalid tokens should receive a 401 Unauthorized response."
+  },
+  {
+    "id": "TC002",
+    "title": "rate limiting enforcement per user",
+    "description": "Test that the in-memory rate limiter allows up to 20 requests per 60-second window per authenticated user to POST /api/gemini and returns a 429 error when the limit is exceeded."
+  },
+  {
+    "id": "TC003",
+    "title": "cors enforcement for allowed origins",
+    "description": "Ensure that OPTIONS and POST requests to /api/gemini with Origin headers from configured allowed origins receive appropriate CORS headers and succeed, while requests from unknown origins receive a 403 error."
+  },
+  {
+    "id": "TC004",
+    "title": "chapter explanation generation",
+    "description": "Validate that POST /api/gemini with action 'explain' and required parameters returns a 200 response with markdown explanation text including LaTeX support, and missing action returns 400 error."
+  },
+  {
+    "id": "TC005",
+    "title": "chapter generation with topic and level",
+    "description": "Verify that POST /api/gemini with action 'generate-chapter' and valid topic and level returns a 200 response with a JSON chapter object, and missing topic returns 400 error."
+  },
+  {
+    "id": "TC006",
+    "title": "mind map generation with complexity and detail",
+    "description": "Test that POST /api/gemini with action 'generate-mindmap' and valid parameters returns a 200 response with JSON mind map data, and invalid complexity returns 400 error."
+  },
+  {
+    "id": "TC007",
+    "title": "active recall question generation",
+    "description": "Check that POST /api/gemini with action 'generate-question' and valid conceptTitle and context returns a 200 response with a single question string, and missing conceptTitle returns 400 error."
+  },
+  {
+    "id": "TC008",
+    "title": "flashcard generation with concepts",
+    "description": "Confirm that POST /api/gemini with action 'generate-flashcards' and at least one concept returns a 200 response with exactly 5 flashcards in JSON, and empty concepts array returns 400 error."
+  },
+  {
+    "id": "TC009",
+    "title": "quiz generation with valid count and type",
+    "description": "Validate that POST /api/gemini with action 'generate-quiz', valid quizType, and count between 1 and 5 returns a 200 response with quiz questions JSON, and invalid count returns 400 error."
+  },
+  {
+    "id": "TC010",
+    "title": "doubt solver chat functionality",
+    "description": "Ensure that POST /api/gemini with action 'doubt' and non-empty history returns a 200 response with AI chat reply, and empty history returns 400 error."
+  }
+]

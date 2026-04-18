@@ -1,0 +1,105 @@
+/* ── tailwindcss-animate compatibility layer ─────────────────────────────── */
+/* Provides animate-in, fade-in, zoom-in, slide-in-from-* used across the app */
+
+:root {
+  --tw-enter-opacity:     1;
+  --tw-enter-scale:       1;
+  --tw-enter-translate-x: 0;
+  --tw-enter-translate-y: 0;
+  --tw-animate-dur:       300ms;
+}
+
+@keyframes tw-animate-enter {
+  from {
+    opacity:   var(--tw-enter-opacity,     1);
+    transform: translate(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0))
+               scale(var(--tw-enter-scale, 1));
+  }
+  to {
+    opacity:   1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* Base animate-in class */
+.animate-in {
+  animation-name:      tw-animate-enter;
+  animation-fill-mode: both;
+  animation-duration:  var(--tw-animate-dur, 300ms);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Entry modifiers ─────────────────────────────────────────────────────── */
+.fade-in               { --tw-enter-opacity:     0; }
+
+.zoom-in               { --tw-enter-scale:       0;    }
+.zoom-in-95            { --tw-enter-scale:       0.95; }
+.zoom-in-90            { --tw-enter-scale:       0.90; }
+
+.slide-in-from-bottom   { --tw-enter-translate-y: 100%;    }
+.slide-in-from-bottom-2 { --tw-enter-translate-y: 0.5rem;  }
+.slide-in-from-bottom-4 { --tw-enter-translate-y: 1rem;    }
+.slide-in-from-bottom-8 { --tw-enter-translate-y: 2rem;    }
+
+.slide-in-from-top      { --tw-enter-translate-y: -100%;   }
+.slide-in-from-top-2    { --tw-enter-translate-y: -0.5rem; }
+.slide-in-from-top-4    { --tw-enter-translate-y: -1rem;   }
+
+.slide-in-from-right    { --tw-enter-translate-x: 100%;    }
+.slide-in-from-right-4  { --tw-enter-translate-x: 1rem;    }
+.slide-in-from-right-8  { --tw-enter-translate-x: 2rem;    }
+
+.slide-in-from-left     { --tw-enter-translate-x: -100%;   }
+.slide-in-from-left-4   { --tw-enter-translate-x: -1rem;   }
+
+/* ── Duration modifiers (for animation-duration, separate from transition) ── */
+/* Use specificity: .animate-in + duration override */
+.animate-in.duration-100  { --tw-animate-dur: 100ms; }
+.animate-in.duration-150  { --tw-animate-dur: 150ms; }
+.animate-in.duration-200  { --tw-animate-dur: 200ms; }
+.animate-in.duration-250  { --tw-animate-dur: 250ms; }
+.animate-in.duration-300  { --tw-animate-dur: 300ms; }
+.animate-in.duration-500  { --tw-animate-dur: 500ms; }
+.animate-in.duration-700  { --tw-animate-dur: 700ms; }
+.animate-in.duration-1000 { --tw-animate-dur: 1000ms; }
+
+/* ── Skeleton shimmer loader ─────────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: 0.5rem;
+}
+html.dark .skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+/* ── AI typing dots ──────────────────────────────────────────────────────── */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.35; }
+  30%            { transform: translateY(-5px); opacity: 1;    }
+}
+.typing-dot { animation: typing-bounce 1.2s ease infinite; }
+.typing-dot:nth-child(1) { animation-delay: 0ms;   }
+.typing-dot:nth-child(2) { animation-delay: 150ms; }
+.typing-dot:nth-child(3) { animation-delay: 300ms; }
+
+/* ── Quiz generating pulse ───────────────────────────────────────────────── */
+@keyframes gen-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.5; transform: scale(0.96); }
+}
+.gen-pulse { animation: gen-pulse 1.8s ease-in-out infinite; }
+
+/* ── Scrollbar styling ───────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+html.dark ::-webkit-scrollbar-thumb { background: #475569; }

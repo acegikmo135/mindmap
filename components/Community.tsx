@@ -3,6 +3,7 @@ import { UserProfile, FriendRequest } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { sendFriendRequest, getFriendRequests, updateFriendRequestStatus, deleteFriendRequest } from '../services/db';
+import { sendPushNotification } from '../services/notifications';
 import { Users, UserPlus, Loader2, Search, Bell, Check, X, MessageSquare, UserCheck } from 'lucide-react';
 
 interface CommunityProps {
@@ -30,10 +31,10 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
     setLoading(true);
     
     try {
-      // Fetch classmates
+      // Fetch classmates — only select columns needed for the UI (never fetch email of other users)
       const { data: classmatesData, error: classmatesError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, full_name, grade, avatar_url, hobbies')
         .eq('grade', profile.grade)
         .neq('id', user.id);
       
@@ -91,6 +92,12 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
       await sendFriendRequest(user.id, receiverId);
       setSentRequestIds(prev => [...prev, receiverId]);
       triggerToast('Friend request sent!');
+      // Notify the receiver
+      sendPushNotification(
+        receiverId,
+        'New Friend Request',
+        `${profile?.full_name || 'A classmate'} wants to connect with you!`
+      );
     } catch (error) {
       console.error('Error sending friend request:', error);
       triggerToast('Failed to send request.');
@@ -100,19 +107,25 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
   const handleAcceptRequest = async (request: FriendRequest) => {
     try {
       await updateFriendRequestStatus(request.id, 'ACCEPTED');
-      
+
       // Update local states immediately
       setRequests(prev => prev.filter(r => r.id !== request.id));
       setIncomingRequestIds(prev => prev.filter(id => id !== request.sender_id));
       setAcceptedFriendIds(prev => [...prev, request.sender_id]);
-      
+
       // Add to friends list
       const newFriend = classmates.find(c => c.id === request.sender_id);
       if (newFriend) {
         setFriends(prev => [...prev, newFriend]);
       }
-      
+
       triggerToast('Request accepted!');
+      // Notify the original sender
+      sendPushNotification(
+        request.sender_id,
+        'Friend Request Accepted',
+        `${profile?.full_name || 'Your classmate'} accepted your friend request!`
+      );
     } catch (error) {
       console.error('Error accepting friend request:', error);
       triggerToast('Failed to accept request.');
@@ -121,13 +134,18 @@ const Community: React.FC<CommunityProps> = ({ profile }) => {
 
   const handleDeclineRequest = async (requestId: string) => {
     try {
-      // "Just remove from requests" - we'll delete it so they can try again if they want
-      await deleteFriendRequest(requestId);
-      
-      // Update local state
       const declinedReq = requests.find(r => r.id === requestId);
+      await deleteFriendRequest(requestId);
+
+      // Update local state
       if (declinedReq) {
         setIncomingRequestIds(prev => prev.filter(id => id !== declinedReq.sender_id));
+        // Notify the sender
+        sendPushNotification(
+          declinedReq.sender_id,
+          'Friend Request Update',
+          `${profile?.full_name || 'Your classmate'} couldn't connect right now.`
+        );
       }
       setRequests(prev => prev.filter(r => r.id !== requestId));
       setShowDeclineInput(null);
