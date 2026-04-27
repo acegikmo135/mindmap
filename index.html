@@ -3,39 +3,157 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CogniStruct NCERT Learning</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>CogniStruct – Academic Luminary</title>
+
+    <!-- Tailwind CDN with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+
     <script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Merriweather', 'serif'],
-            },
             colors: {
+              // Design system: Academic Luminary — backed by CSS variables for dark mode
+              "surface-container-lowest": "var(--cs-scl)",
+              "surface-container-low":    "var(--cs-sclo)",
+              "surface-container":        "var(--cs-sc)",
+              "surface-container-high":   "var(--cs-sch)",
+              "surface-container-highest":"var(--cs-schi)",
+              "surface":                  "var(--cs-surface)",
+              "surface-bright":           "var(--cs-surface)",
+              "surface-dim":              "var(--cs-sch)",
+              "surface-variant":          "var(--cs-sc)",
+              "on-surface":               "var(--cs-os)",
+              "on-surface-variant":       "var(--cs-osv)",
+              "on-background":            "var(--cs-os)",
+              "background":               "var(--cs-surface)",
+
+              "primary":                  "#c85b32",
+              "primary-container":        "#d4693a",
+              "primary-fixed":            "var(--cs-pf)",
+              "primary-fixed-dim":        "#f4bca4",
+              "on-primary":               "#ffffff",
+              "on-primary-container":     "#fde8de",
+              "on-primary-fixed":         "#3d1608",
+              "on-primary-fixed-variant": "#a84928",
+              "inverse-primary":          "#f4bca4",
+              "surface-tint":             "#c86a45",
+
+              "secondary":                "var(--cs-sec)",
+              "secondary-container":      "var(--cs-secc)",
+              "secondary-fixed":          "#d5e3fc",
+              "secondary-fixed-dim":      "#b9c7df",
+              "on-secondary":             "#ffffff",
+              "on-secondary-container":   "var(--cs-sec)",
+              "on-secondary-fixed":       "#0d1c2e",
+              "on-secondary-fixed-variant":"#3a485b",
+
+              "tertiary":                 "#7e3000",
+              "tertiary-container":       "#a44100",
+              "tertiary-fixed":           "#ffdbcc",
+              "tertiary-fixed-dim":       "#ffb695",
+              "on-tertiary":              "#ffffff",
+              "on-tertiary-container":    "#ffd2be",
+              "on-tertiary-fixed":        "#351000",
+              "on-tertiary-fixed-variant":"#7b2f00",
+
+              "outline":                  "var(--cs-out)",
+              "outline-variant":          "var(--cs-outv)",
+
+              "error":                    "#ba1a1a",
+              "error-container":          "#ffdad6",
+              "on-error":                 "#ffffff",
+              "on-error-container":       "#93000a",
+
+              "inverse-surface":          "#2d3135",
+              "inverse-on-surface":       "#eff1f6",
+
+              // Legacy primary scale
               primary: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                900: '#0c4a6e',
+                50:  "#fdf2ee",
+                100: "#fae0d4",
+                200: "#f4bca4",
+                300: "#ec9470",
+                400: "#de7048",
+                500: "#c85b32",
+                600: "#a84928",
+                700: "#8a3a1f",
+                800: "#6d2d18",
+                900: "#502010",
               },
-              academic: {
-                bg: '#f8fafc',
-                paper: '#ffffff',
-                text: '#334155',
-                heading: '#0f172a',
-              }
-            }
+            },
+            fontFamily: {
+              headline: ["'Instrument Serif'", "serif"],
+              display:  ["'Newsreader'", "serif"],
+              body:     ["'Inter'", "sans-serif"],
+              label:    ["'Inter'", "sans-serif"],
+              mono:     ["'JetBrains Mono'", "monospace"],
+              sans:     ["'Inter'", "sans-serif"],
+              serif:    ["'Newsreader'", "serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg:      "0.5rem",
+              xl:      "0.75rem",
+              "2xl":   "1rem",
+              "3xl":   "1.5rem",
+              full:    "9999px",
+            },
+            boxShadow: {
+              card: "0 4px 16px rgba(15,23,42,0.08)",
+              elevated: "0 8px 24px rgba(15,23,42,0.12)",
+              glow: "0 4px 16px rgba(200,91,50,0.28)",
+              "glow-lg": "0 6px 24px rgba(200,91,50,0.38)",
+            },
           }
         }
       }
     </script>
+
     <style>
+      /* ── Design token CSS variables (light) ───────────────────── */
+      :root {
+        --cs-surface: #f7f9fe;
+        --cs-scl:     #ffffff;    /* surface-container-lowest */
+        --cs-sclo:    #f1f4f9;    /* surface-container-low    */
+        --cs-sc:      #eceef3;    /* surface-container        */
+        --cs-sch:     #e6e8ed;    /* surface-container-high   */
+        --cs-schi:    #e0e2e7;    /* surface-container-highest*/
+        --cs-os:      #181c20;    /* on-surface               */
+        --cs-osv:     #464555;    /* on-surface-variant       */
+        --cs-sec:     #515f74;    /* secondary                */
+        --cs-secc:    #d5e3fc;    /* secondary-container      */
+        --cs-out:     #777587;    /* outline                  */
+        --cs-outv:    #c7c4d8;    /* outline-variant          */
+        --cs-pf:      #fde8de;    /* primary-fixed            */
+      }
+
+      /* ── Design token CSS variables (dark) ────────────────────── */
+      html.dark {
+        --cs-surface: #141210;    /* warm near-black */
+        --cs-scl:     #1c1917;    /* card surface */
+        --cs-sclo:    #222019;    /* surface-container-low */
+        --cs-sc:      #2a2722;    /* surface-container */
+        --cs-sch:     #32302b;    /* surface-container-high */
+        --cs-schi:    #3b3832;    /* surface-container-highest */
+        --cs-os:      #f0ede8;    /* warm white text */
+        --cs-osv:     #c0bcb5;    /* warm secondary text */
+        --cs-sec:     #9c9890;    /* warm muted text */
+        --cs-secc:    #2a1e18;    /* secondary container */
+        --cs-out:     #908a84;    /* warm outline */
+        --cs-outv:    #46413c;    /* warm outline variant */
+        --cs-pf:      rgba(200,91,50,0.14);
+      }
+
+      /* ── Reset & base ─────────────────────────────────────────── */
       html, body {
         height: 100% !important;
         width: 100% !important;
@@ -43,79 +161,177 @@
         padding: 0 !important;
         overflow: hidden !important;
         position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
+        top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
         overscroll-behavior: none !important;
-      }
-
-      #root {
-        height: 100%;
-      }
-
-      body {
+        font-family: 'Inter', sans-serif;
+        color: #181c20;
+        background-color: #f7f9fe;
         transition: background-color 0.3s, color 0.3s;
       }
-      
-      /* Dark Mode Base Styles handled by Tailwind 'dark:' classes mostly, 
-         but we ensure scrolling is nice */
-      html.dark body {
-        background-color: #0f172a;
-        color: #e2e8f0;
+      #root { height: 100%; }
+
+      /* ── Material Symbols ─────────────────────────────────────── */
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        line-height: 1;
+        vertical-align: middle;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
       }
 
-      /* Reading Mode Overrides - Warm Sepia Tones */
-      html.reading body {
-        background-color: #f7f1e3;
-        color: #4a3b2a;
-      }
-      
-      html.reading .bg-white {
-        background-color: #fdfbf7 !important;
-        border-color: #e6dcc8 !important;
-      }
-      
-      html.reading .bg-slate-50, 
-      html.reading .bg-slate-100 {
-        background-color: #efe8d5 !important;
-        border-color: #e6dcc8 !important;
-      }
-      
-      html.reading .text-slate-900,
-      html.reading .text-slate-800,
-      html.reading .text-slate-700 {
-        color: #4a3b2a !important;
-      }
-      
-      html.reading .text-slate-500,
-      html.reading .text-slate-400 {
-        color: #8c7b66 !important;
-      }
-      
-      html.reading .border-slate-100,
-      html.reading .border-slate-200 {
-        border-color: #e6dcc8 !important;
+      /* ── Dark Mode ────────────────────────────────────────────── */
+      html.dark body { background-color: var(--cs-surface) !important; color: var(--cs-os) !important; }
+
+      /* primary text lightens in dark so it's readable on dark surfaces */
+      html.dark .text-primary { color: #f0a07a !important; }
+      /* primary border/outline adapt */
+      html.dark .border-primary { border-color: #f0a07a !important; }
+
+      /* error-container opacity variants */
+      html.dark .bg-error-container\/40 { background-color: rgba(147,0,10,0.35) !important; }
+      html.dark .bg-error-container\/30 { background-color: rgba(147,0,10,0.25) !important; }
+      html.dark .bg-error-container\/20 { background-color: rgba(147,0,10,0.18) !important; }
+      html.dark .text-error             { color: #ff8585 !important; }
+      html.dark .text-on-error-container{ color: #ffb4ab !important; }
+
+      /* glass surfaces — detailed overrides in dark-mode section below */
+
+      /* dot grid for mind map */
+      html.dark .dot-grid {
+        background-image: radial-gradient(rgba(80,76,70,0.7) 0.5px, transparent 0.5px) !important;
       }
 
-      /* Minimalist scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
+      /* skeleton dark */
+      html.dark .skeleton {
+        background: linear-gradient(90deg,#2a2722 25%,#32302b 50%,#2a2722 75%) !important;
+        background-size: 200% 100% !important;
       }
-      ::-webkit-scrollbar-track {
-        background: transparent;
+
+      /* cs-prose dark overrides */
+      html.dark .cs-prose h2,
+      html.dark .cs-prose h3      { color: var(--cs-os); }
+      html.dark .cs-prose code    { background: rgba(200,91,50,0.18); color: #f4bca4; }
+      html.dark .cs-prose blockquote { color: var(--cs-sec); border-left-color: rgba(200,91,50,0.35); }
+
+      /* ── Light mode: replace indigo tints with accent tints globally ── */
+      .bg-indigo-50     { background-color: #fdf2ee !important; }
+      .bg-indigo-50\/40 { background-color: rgba(200,91,50,0.08) !important; }
+      .bg-indigo-50\/30 { background-color: rgba(200,91,50,0.06) !important; }
+      .bg-indigo-50\/80 { background-color: rgba(200,91,50,0.16) !important; }
+      .text-indigo-50   { color: #fdf2ee !important; }
+      .text-indigo-200  { color: #f4bca4 !important; }
+      .text-indigo-700  { color: #a84928 !important; }
+      .text-indigo-900  { color: #6d2d18 !important; }
+      .text-indigo-500  { color: #c85b32 !important; }
+
+      /* green/amber feedback boxes */
+      html.dark .bg-green-50  { background-color: rgba(5,150,105,0.14) !important; }
+      html.dark .bg-amber-50  { background-color: rgba(180,83,9,0.14)  !important; }
+      html.dark .text-emerald-700 { color: #34d399 !important; }
+      html.dark .text-emerald-800 { color: #34d399 !important; }
+      html.dark .text-amber-800   { color: #fbbf24 !important; }
+      html.dark .text-amber-700   { color: #fbbf24 !important; }
+
+      /* accent tints in dark */
+      html.dark .bg-indigo-50,
+      html.dark .bg-indigo-50\/40,
+      html.dark .bg-indigo-50\/80 { background-color: rgba(200,91,50,0.10) !important; }
+      html.dark .bg-indigo-50\/30 { background-color: rgba(200,91,50,0.08) !important; }
+      html.dark .text-indigo-700  { color: #f0a07a !important; }
+      html.dark .text-indigo-400  { color: #d4845a !important; }
+
+      /* ══════════════════════════════════════════════════════════
+         DARK MODE — clean minimal surface system (no neon glows)
+         ══════════════════════════════════════════════════════════ */
+
+      /* ── Cards: visible border + soft shadow ── */
+      html.dark .shadow-card {
+        box-shadow: 0 2px 16px rgba(0,0,0,0.65) !important;
+        outline: 1px solid rgba(255,255,255,0.13) !important;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
+      html.dark .shadow-card:hover {
+        box-shadow: 0 4px 24px rgba(0,0,0,0.75) !important;
+        outline: 1px solid rgba(255,255,255,0.20) !important;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+      html.dark .shadow-elevated {
+        box-shadow: 0 6px 28px rgba(0,0,0,0.70) !important;
+        outline: 1px solid rgba(255,255,255,0.14) !important;
       }
-      html.dark ::-webkit-scrollbar-thumb {
-        background: #475569;
+
+      /* ── Primary buttons ── */
+      html.dark .shadow-glow    { box-shadow: 0 4px 16px rgba(200,91,50,0.45) !important; }
+      html.dark .shadow-glow-lg { box-shadow: 0 6px 24px rgba(200,91,50,0.55) !important; }
+
+      /* ── bg-white cards ── */
+      html.dark .bg-white {
+        background-color: var(--cs-scl) !important;
+        outline: 1px solid rgba(255,255,255,0.12) !important;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.55) !important;
       }
+
+      /* ── Surface containers — clearly separated layers ── */
+      html.dark .bg-surface-container-lowest {
+        outline: 1px solid rgba(255,255,255,0.11) !important;
+      }
+      html.dark .bg-surface-container-low {
+        outline: 1px solid rgba(255,255,255,0.07) !important;
+      }
+
+      /* ── Sidebar ── */
+      html.dark aside {
+        border-right: 1px solid rgba(255,255,255,0.13) !important;
+        box-shadow: none !important;
+      }
+
+      /* ── Mobile top bar & glass panels ── */
+      html.dark .glass-white {
+        background: rgba(28,25,23,0.97) !important;
+        border-color: rgba(255,255,255,0.13) !important;
+        box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.55) !important;
+      }
+      html.dark .glass-panel {
+        background: rgba(34,32,25,0.95) !important;
+        border-color: rgba(255,255,255,0.10) !important;
+      }
+
+      /* ── PromptInput ── */
+      html.dark .rounded-3xl { border-color: rgba(255,255,255,0.11) !important; }
+      html.dark .rounded-3xl:focus-within {
+        box-shadow: 0 0 0 2px rgba(200,91,50,0.50) !important;
+        border-color: rgba(200,91,50,0.50) !important;
+      }
+
+      /* ── Inline style border overrides ── */
+      html.dark [style*="border-right"] { border-right-color: rgba(255,255,255,0.12) !important; }
+      html.dark [style*="border-top"]   { border-top-color:   rgba(255,255,255,0.10) !important; }
+      html.dark [style*="borderTop"]    { border-top-color:   rgba(255,255,255,0.10) !important; }
+      html.dark [style*="borderColor"]  { border-color:       rgba(255,255,255,0.11) !important; }
+
+      /* ── Tailwind border helpers ── */
+      html.dark .border-outline-variant\/20 { border-color: rgba(255,255,255,0.09) !important; }
+      html.dark .border-outline-variant\/30 { border-color: rgba(255,255,255,0.12) !important; }
+      html.dark .border-outline-variant     { border-color: rgba(255,255,255,0.16) !important; }
+      html.dark .border-b { border-bottom-color: rgba(255,255,255,0.09) !important; }
+      html.dark .border-t { border-top-color:    rgba(255,255,255,0.09) !important; }
+      html.dark .border   { border-color:        rgba(255,255,255,0.11) !important; }
+
+      /* ── Gray utility adjustments ── */
+      html.dark .bg-gray-100 { background-color: var(--cs-sc) !important; }
+      html.dark .bg-gray-50  { background-color: var(--cs-sclo) !important; }
+      html.dark .text-gray-400 { color: var(--cs-sec) !important; }
+      html.dark .text-gray-500 { color: var(--cs-sec) !important; }
+      html.dark .text-gray-700 { color: var(--cs-osv) !important; }
+      html.dark .text-gray-900 { color: var(--cs-os) !important; }
+
+      /* ── Reading/Sepia Mode ───────────────────────────────────── */
+      html.reading body { background-color: #f7f1e3; color: #4a3b2a; }
+      html.reading { --cs-surface: #f7f1e3; --cs-scl: #fdfbf7; --cs-sclo: #efe8d5; --cs-sc: #e8e0cc; }
     </style>
+
   <script type="importmap">
 {
   "imports": {
@@ -132,10 +348,10 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
-</head>
+  <link rel="stylesheet" href="/index.css">
+  </head>
   <body>
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>

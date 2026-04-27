@@ -1,14 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile } from '../types';
-import { User, Mail, BookOpen, Smile, Camera, Check } from 'lucide-react';
+import { uploadAvatar } from '../services/db';
+import { useAuth } from '../contexts/AuthContext';
+import { getProfanityError } from '../utils/profanity';
+import { Loader2 } from 'lucide-react';
 
 interface ProfileProps {
   profile: UserProfile | null;
   setProfile: (p: UserProfile) => void;
 }
 
+const MAX_MB    = 5;
+const MAX_BYTES = MAX_MB * 1024 * 1024;
+const ALLOWED   = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
 const Profile: React.FC<ProfileProps> = ({ profile, setProfile }) => {
+  const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [savedIndicator, setSavedIndicator] = useState(false);
+  const [uploading,      setUploading]      = useState(false);
+  const [uploadError,    setUploadError]    = useState<string | null>(null);
+  const [dragOver,       setDragOver]       = useState(false);
+  const [preview,        setPreview]        = useState<string | null>(null);
+  const [nameError,      setNameError]      = useState<string | null>(null);
+  const [hobbiesError,   setHobbiesError]   = useState<string | null>(null);
 
   useEffect(() => {
     if (!profile) return;
@@ -19,113 +35,186 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile }) => {
 
   if (!profile) return null;
 
+  const handleFile = async (file: File) => {
+    setUploadError(null);
+    if (!ALLOWED.includes(file.type)) { setUploadError('Only JPG, PNG, WebP or GIF files are allowed.'); return; }
+    if (file.size > MAX_BYTES) { setUploadError(`File is too large. Maximum size is ${MAX_MB} MB.`); return; }
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+    setUploading(true);
+    const result = await uploadAvatar(user!.id, file);
+    setUploading(false);
+    URL.revokeObjectURL(objectUrl);
+    setPreview(null);
+    if (result.ok === false) { setUploadError(result.error); return; }
+    setProfile({ ...profile, avatar_url: result.url });
+  };
+
+  const onFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+    e.target.value = '';
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault(); setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  const avatarSrc = preview ?? profile.avatar_url ?? null;
+
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4 animate-in fade-in duration-500">
-      <div className="mb-8 flex justify-between items-end">
-        <div>
-          <h2 className="text-3xl font-serif font-bold text-slate-800 dark:text-white mb-2">Your Profile</h2>
-          <p className="text-slate-500 dark:text-slate-400">Manage your personal information and learning preferences.</p>
+    <div className="max-w-2xl mx-auto animate-in fade-in duration-500 pb-8 px-4">
+
+      {/* Profile header */}
+      <section className="flex flex-col items-center text-center mb-10 pt-4">
+        <div className="relative group"
+          onClick={() => !uploading && fileInputRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={onDrop}
+          title="Click or drop to change photo"
+        >
+          <div className={`w-24 h-24 rounded-full overflow-hidden cursor-pointer ${dragOver ? 'ring-4 ring-primary ring-offset-2' : ''}`}
+            style={{ outline: '4px solid white', boxShadow: '0 4px 16px rgba(15,23,42,0.15)' }}>
+            {uploading ? (
+              <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : avatarSrc ? (
+              <img src={avatarSrc} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-primary-fixed flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-[36px]" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+              </div>
+            )}
+          </div>
+          {!uploading && (
+            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+              <span className="material-symbols-outlined text-white text-[24px]">photo_camera</span>
+            </div>
+          )}
+          <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1.5 shadow-md">
+            <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+          </div>
         </div>
-        {savedIndicator && (
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium animate-in fade-in">
-            <Check className="w-4 h-4" />
-            Auto-saved
+        <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={onFileInput} />
+
+        <h2 className="mt-5 font-headline text-4xl text-on-surface">{profile.full_name || 'Your Name'}</h2>
+        <p className="text-secondary text-sm font-medium mt-1">{profile.email || ''}</p>
+
+        {(profile.total_points ?? 0) > 0 && (
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-full shadow-sm">
+            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+            <span className="text-xs font-bold tracking-wide uppercase">{profile.total_points?.toLocaleString()} Points</span>
           </div>
         )}
+      </section>
+
+      {/* Form card */}
+      <div className="relative bg-surface-container-lowest rounded-2xl p-8"
+        style={{ boxShadow: '0 4px 24px rgba(15,23,42,0.06)', outline: '1px solid rgba(199,196,216,0.15)' }}>
+        {savedIndicator && (
+          <div className="absolute top-8 right-8 flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold animate-in fade-in">
+            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+            Saved ✓
+          </div>
+        )}
+
+        <div className="space-y-7">
+          {/* Full name */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-xs font-bold text-secondary tracking-widest uppercase px-1">
+              <span className="material-symbols-outlined text-[18px]">person</span>
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={profile.full_name || ''}
+              onChange={e => {
+                const val = e.target.value;
+                const err = getProfanityError(val);
+                setNameError(err);
+                if (!err) setProfile({ ...profile, full_name: val });
+              }}
+              className={`w-full bg-surface-container-low rounded-xl px-4 py-3.5 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium ${nameError ? 'ring-2 ring-error' : ''}`}
+              style={{ border: 'none' }}
+              placeholder="Your full name"
+            />
+            {nameError && <p className="text-xs text-error px-1">{nameError}</p>}
+          </div>
+
+          {/* Grade */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-xs font-bold text-secondary tracking-widest uppercase px-1">
+              <span className="material-symbols-outlined text-[18px]">school</span>
+              Grade
+            </label>
+            <div className="relative">
+              <select
+                value={profile.grade || ''}
+                onChange={e => setProfile({ ...profile, grade: e.target.value })}
+                className="w-full appearance-none bg-surface-container-low rounded-xl px-4 py-3.5 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                style={{ border: 'none' }}
+              >
+                <option value="">Select Grade</option>
+                {[6, 7, 8, 9, 10].map(g => (
+                  <option key={g} value={String(g)}>Class {g}</option>
+                ))}
+              </select>
+              <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-secondary text-[18px]">expand_more</span>
+            </div>
+          </div>
+
+          {/* Hobbies */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-xs font-bold text-secondary tracking-widest uppercase px-1">
+              <span className="material-symbols-outlined text-[18px]">interests</span>
+              Hobbies &amp; Interests
+            </label>
+            <textarea
+              value={profile.hobbies || ''}
+              onChange={e => {
+                const val = e.target.value;
+                const err = getProfanityError(val);
+                setHobbiesError(err);
+                if (!err) setProfile({ ...profile, hobbies: val });
+              }}
+              className={`w-full bg-surface-container-low rounded-xl px-4 py-3.5 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium resize-none ${hobbiesError ? 'ring-2 ring-error' : ''}`}
+              style={{ border: 'none' }}
+              rows={4}
+              placeholder="What do you enjoy learning or doing in your free time?"
+            />
+            {hobbiesError
+              ? <p className="text-xs text-error px-1">{hobbiesError}</p>
+              : <p className="text-xs text-outline px-1">Helps the AI personalize examples for you. Saved automatically.</p>}
+          </div>
+
+          {/* Upload error */}
+          {uploadError && (
+            <div className="flex items-start gap-2 p-3 bg-error-container/40 rounded-xl text-error text-sm">
+              <span className="material-symbols-outlined text-[16px] shrink-0 mt-0.5">error</span>
+              <span className="flex-1">{uploadError}</span>
+              <button onClick={() => setUploadError(null)}>
+                <span className="material-symbols-outlined text-[16px]">close</span>
+              </button>
+            </div>
+          )}
+
+          <p className="text-xs text-outline px-1">
+            Click your avatar to upload a photo · JPG, PNG, WebP or GIF · max {MAX_MB} MB
+          </p>
+        </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-primary-500 to-blue-600 relative">
-          <div className="absolute -bottom-12 left-8">
-            <div className="w-24 h-24 rounded-full bg-white dark:bg-slate-900 p-1 shadow-lg">
-              <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <User className="w-10 h-10 text-slate-400" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-16 pb-8 px-8 space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  value={profile.full_name || ''}
-                  onChange={e => setProfile({ ...profile, full_name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
-                  placeholder="John Doe"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="email"
-                  value={profile.email || ''}
-                  disabled
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-slate-500 cursor-not-allowed"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Grade / Class</label>
-              <div className="relative">
-                <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <select
-                  value={profile.grade || ''}
-                  onChange={e => setProfile({ ...profile, grade: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all appearance-none"
-                >
-                  <option value="">Select Grade</option>
-                  <option value="6">Class 6</option>
-                  <option value="7">Class 7</option>
-                  <option value="8">Class 8</option>
-                  <option value="9">Class 9</option>
-                  <option value="10">Class 10</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Avatar URL</label>
-              <div className="relative">
-                <Camera className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  value={profile.avatar_url || ''}
-                  onChange={e => setProfile({ ...profile, avatar_url: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
-                  placeholder="https://example.com/avatar.jpg"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hobbies & Interests</label>
-            <div className="relative">
-              <Smile className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-              <textarea
-                value={profile.hobbies || ''}
-                onChange={e => setProfile({ ...profile, hobbies: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all min-h-[100px]"
-                placeholder="Reading, Coding, Football..."
-              />
-            </div>
-            <p className="text-xs text-slate-400 mt-1">This helps the AI personalize examples for you. Changes are saved automatically.</p>
-          </div>
-        </div>
+      {/* XP card */}
+      <div className="mt-8 bg-tertiary-fixed/40 p-6 rounded-2xl">
+        <span className="material-symbols-outlined text-tertiary mb-3 block" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+        <h4 className="text-on-tertiary-fixed font-bold text-lg leading-tight">
+          {(profile.total_points ?? 0) > 0 ? `${profile.total_points?.toLocaleString()} XP Earned` : 'Start Earning XP'}
+        </h4>
+        <p className="text-on-tertiary-fixed-variant/70 text-sm mt-1">Take quizzes and complete concepts to climb the leaderboard.</p>
       </div>
     </div>
   );

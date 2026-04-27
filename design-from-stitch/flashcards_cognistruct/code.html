@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniStruct | Flashcards</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#181c20",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-variant": "#e0e2e7",
+                        "surface": "#f7f9fe",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-background": "#181c20",
+                        "primary-container": "#4b4dd8",
+                        "surface-container-low": "#f1f4f9",
+                        "secondary": "#515f74",
+                        "surface-dim": "#d8dadf",
+                        "on-primary-fixed": "#07006c",
+                        "inverse-surface": "#2d3135",
+                        "inverse-on-surface": "#eff1f6",
+                        "surface-tint": "#494bd6",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "outline": "#777587",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "on-secondary-container": "#57657a",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#d9d8ff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "secondary-container": "#d5e3fc",
+                        "surface-container": "#eceef3",
+                        "on-surface-variant": "#464555",
+                        "primary": "#3130c0",
+                        "outline-variant": "#c7c4d8",
+                        "tertiary": "#7e3000",
+                        "surface-bright": "#f7f9fe",
+                        "surface-container-high": "#e6e8ed",
+                        "on-tertiary-fixed": "#351000",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#d5e3fc",
+                        "inverse-primary": "#c0c1ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Instrument Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased overflow-x-hidden">
+<!-- TopAppBar Shell -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm dark:shadow-none fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-4 md:px-8 justify-between">
+<div class="flex items-center gap-4">
+<span class="font-serif text-2xl italic font-semibold text-indigo-700 dark:text-indigo-300">CogniStruct</span>
+</div>
+<div class="hidden md:flex flex-1 justify-end items-center gap-6">
+<div class="relative w-64 group">
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 px-10 focus:ring-2 focus:ring-primary/20 text-sm transition-all" placeholder="Search knowledge..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-2 text-outline text-lg">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:bg-indigo-50 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-slate-500 hover:bg-indigo-50 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="Student avatar" class="w-8 h-8 rounded-full border-2 border-primary-fixed" data-alt="portrait of a professional student with a focused expression in a bright modern library setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaAlcGfTH0WwS6POsnjuo1ONkCGM7GIjfwk4fMqilRc6UPeLMDXw7pA9g_zbFJ-MxRXC9kxfrxl6Hq0UJaW7A0BGF36ETkQE15Mridr2QubSpPVzLA0PDRqNb-p_NJLPut3cCE6vNlWvn87GGixXDfI8NKkAitYISUQdZAocebQkb9TL-mx-X7prfY4uhZ67l_d93gMrCCiH5ci-8bhkeATYk3tZwZvqc7pBvlnqKTadUDtbGFsJ1kDA3mq-OV7WeLlshoFNKlEnE"/>
+</div>
+</div>
+<!-- Mobile Layout for TopAppBar -->
+<div class="flex md:hidden justify-between items-center w-full">
+<span class="font-serif text-xl italic font-semibold text-indigo-700">CogniStruct</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-indigo-600">notifications</span>
+<img alt="Student avatar" class="w-8 h-8 rounded-full" data-alt="student avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9elTVc7T4IItcK9-T5WGwfk-fDzSKKdGy1Ayk_BVi3v4XaTf_Cq-Pyq0zNlDvHNgZ8gKOjskfM77Uy6RREjhumrAztwqu5HgbN9aBalv9Nrqw3ZzzKNwHoN3z4t0a2mwvFjdYAQ-nbZfLzKPMNDb6wXol_GGi8hyo69zsRnjbfTv3VwEe4ZeyPv9seeKF5BEhy8wgFRZBIi-fSuhIaN5OHmbtdSXiu3wGv8bSLf1HJZFhj3oCToK_bJ_0Ivz4aEwGyAky-aU_yjU"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar Shell -->
+<nav class="w-60 h-screen fixed left-0 top-0 hidden md:flex flex-col bg-slate-50 dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 py-8 gap-y-2 z-30">
+<div class="px-6 mb-8 mt-12">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-container rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+<div>
+<h2 class="font-serif text-lg italic font-bold text-indigo-900">CogniStruct</h2>
+<p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Academic Luminary</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 px-2">
+<a class="text-slate-600 hover:bg-slate-200 transition-all duration-300 mx-2 px-4 py-3 flex items-center gap-3 rounded-full font-sans text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">psychology</span> AI Tutor
+            </a>
+<a class="text-slate-600 hover:bg-slate-200 transition-all duration-300 mx-2 px-4 py-3 flex items-center gap-3 rounded-full font-sans text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">hub</span> Mind Maps
+            </a>
+<a class="text-slate-600 hover:bg-slate-200 transition-all duration-300 mx-2 px-4 py-3 flex items-center gap-3 rounded-full font-sans text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">quiz</span> Quizzes
+            </a>
+<a class="bg-indigo-50 text-indigo-700 mx-2 px-4 py-3 flex items-center gap-3 rounded-full font-sans text-sm font-semibold shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">style</span> Flashcards
+            </a>
+<a class="text-slate-600 hover:bg-slate-200 transition-all duration-300 mx-2 px-4 py-3 flex items-center gap-3 rounded-full font-sans text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">groups</span> Community
+            </a>
+</div>
+<div class="mt-auto px-4">
+<div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-indigo-50 mb-6">
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-2">Daily Goal: 80%</p>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<a class="text-slate-600 hover:bg-slate-200 transition-all px-4 py-2 flex items-center gap-3 rounded-lg text-xs font-semibold" href="#">
+<span class="material-symbols-outlined text-sm">auto_stories</span> Reading Mode
+                </a>
+<a class="text-slate-600 hover:bg-slate-200 transition-all px-4 py-2 flex items-center gap-3 rounded-lg text-xs font-semibold" href="#">
+<span class="material-symbols-outlined text-sm">help</span> Help
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="md:ml-60 pt-24 pb-32 md:pb-12 px-4 md:px-12 max-w-7xl mx-auto">
+<!-- Section Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div class="max-w-xl">
+<h1 class="font-headline text-5xl text-on-surface mb-2">Quantum Physics II</h1>
+<p class="text-secondary text-lg">Reviewing 42 active cards in this deck.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-highest text-primary px-6 py-3 rounded-[10px] font-semibold text-sm hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">add_circle</span> Add Card
+                </button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-[10px] font-semibold text-sm shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">bolt</span> AI Generate
+                </button>
+</div>
+</header>
+<!-- Centered Card Study Area -->
+<section class="max-w-2xl mx-auto flex flex-col items-center">
+<!-- Bento Stats Grid (Minimal) -->
+<div class="grid grid-cols-3 gap-4 w-full mb-8">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex flex-col items-center">
+<span class="text-xs font-bold text-secondary uppercase tracking-tighter">New</span>
+<span class="text-xl font-semibold text-primary">12</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex flex-col items-center">
+<span class="text-xs font-bold text-secondary uppercase tracking-tighter">Learning</span>
+<span class="text-xl font-semibold text-tertiary">5</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex flex-col items-center">
+<span class="text-xs font-bold text-secondary uppercase tracking-tighter">Review</span>
+<span class="text-xl font-semibold text-on-secondary-fixed-variant">25</span>
+</div>
+</div>
+<!-- The Flashcard (3D Interaction Visualized) -->
+<div class="w-full h-[240px] perspective-1000 relative group cursor-pointer">
+<!-- Card Inner -->
+<div class="relative w-full h-full transition-transform duration-700 transform-style-3d shadow-xl shadow-indigo-100 rounded-[24px]">
+<!-- Front Side -->
+<div class="absolute inset-0 backface-hidden bg-gradient-to-br from-primary to-primary-container rounded-[24px] flex flex-col items-center justify-center p-8 text-center border-4 border-white/20">
+<div class="absolute top-4 left-4 opacity-50">
+<span class="material-symbols-outlined text-white text-3xl">psychology</span>
+</div>
+<h2 class="font-headline text-3xl md:text-4xl text-on-primary">What is the Uncertainty Principle?</h2>
+<div class="mt-8 flex items-center gap-2 text-on-primary/60 text-xs font-bold uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">touch_app</span> Tap to Flip
+                        </div>
+</div>
+</div>
+</div>
+<!-- Rating Pill Buttons (Appears after flip context) -->
+<div class="mt-12 flex flex-wrap justify-center gap-3 w-full max-w-lg">
+<button class="flex-1 min-w-[100px] py-4 px-2 bg-white rounded-full border border-outline-variant/20 hover:bg-error-container/20 hover:text-error transition-all group">
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-error/70">Again</span>
+<span class="text-[10px] font-mono mt-1 text-outline">&lt;1m</span>
+</div>
+</button>
+<button class="flex-1 min-w-[100px] py-4 px-2 bg-white rounded-full border border-outline-variant/20 hover:bg-orange-50 hover:text-tertiary transition-all group">
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-tertiary/70">Hard</span>
+<span class="text-[10px] font-mono mt-1 text-outline">2d</span>
+</div>
+</button>
+<button class="flex-1 min-w-[100px] py-4 px-2 bg-white rounded-full border border-outline-variant/20 hover:bg-indigo-50 hover:text-primary transition-all group">
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-primary/70">Good</span>
+<span class="text-[10px] font-mono mt-1 text-outline">4d</span>
+</div>
+</button>
+<button class="flex-1 min-w-[100px] py-4 px-2 bg-white rounded-full border border-outline-variant/20 hover:bg-emerald-50 hover:text-emerald-700 transition-all group">
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-700/70">Easy</span>
+<span class="text-[10px] font-mono mt-1 text-outline">7d</span>
+</div>
+</button>
+</div>
+<!-- Additional Context Cards -->
+<div class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10">
+<h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span> Performance Insight
+                    </h3>
+<p class="text-sm text-secondary leading-relaxed">Your retention for "Quantum Mechanics" is at 88%. Focus on mathematical proofs this session to hit your target.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10">
+<h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">lightbulb</span> Study Tip
+                    </h3>
+<p class="text-sm text-secondary leading-relaxed">Try the "Feynman Technique": explain the uncertainty principle to a peer to solidify your understanding.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Shell (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center h-20 px-2 pb-safe bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] z-50 rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider mt-1">Tutor</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider mt-1">Maps</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider mt-1">Quiz</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-indigo-100 text-indigo-800 rounded-xl px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">style</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider mt-1">Cards</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider mt-1">Social</span>
+</a>
+</nav>
+<!-- Aesthetic Decorative Elements -->
+<div class="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-indigo-100/30 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-indigo-50/50 rounded-full blur-[120px] -translate-x-1/3 translate-y-1/3"></div>
+</body></html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniStruct - Mind Maps</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#181c20",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-variant": "#e0e2e7",
+                        "surface": "#f7f9fe",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-background": "#181c20",
+                        "primary-container": "#4b4dd8",
+                        "surface-container-low": "#f1f4f9",
+                        "secondary": "#515f74",
+                        "surface-dim": "#d8dadf",
+                        "on-primary-fixed": "#07006c",
+                        "inverse-surface": "#2d3135",
+                        "inverse-on-surface": "#eff1f6",
+                        "surface-tint": "#494bd6",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "outline": "#777587",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "on-secondary-container": "#57657a",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#d9d8ff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "secondary-container": "#d5e3fc",
+                        "surface-container": "#eceef3",
+                        "on-surface-variant": "#464555",
+                        "primary": "#3130c0",
+                        "outline-variant": "#c7c4d8",
+                        "tertiary": "#7e3000",
+                        "surface-bright": "#f7f9fe",
+                        "surface-container-high": "#e6e8ed",
+                        "on-tertiary-fixed": "#351000",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#d5e3fc",
+                        "inverse-primary": "#c0c1ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Instrument Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .dot-grid {
+            background-image: radial-gradient(#c7c4d8 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+        .mindmap-node {
+            filter: drop-shadow(0 4px 12px rgba(49, 48, 192, 0.1));
+        }
+        .glass-panel {
+            background: rgba(247, 249, 254, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background antialiased selection:bg-primary-fixed">
+<!-- Top Navigation (Mobile Only) -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm dark:shadow-none docked full-width top-0 z-40 flex md:hidden justify-between items-center w-full px-4 h-16">
+<span class="font-serif text-2xl italic font-semibold text-indigo-700 dark:text-indigo-300">CogniStruct</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">notifications</span>
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">settings</span>
+</div>
+</header>
+<!-- Sidebar (Desktop) -->
+<aside class="w-60 h-screen fixed left-0 top-0 hidden md:flex flex-col bg-slate-50 dark:bg-slate-950 shadow-none border-r border-slate-100 dark:border-slate-800 py-8 gap-y-2 z-30">
+<div class="px-6 mb-8">
+<h1 class="font-serif text-xl italic font-bold text-indigo-900 dark:text-indigo-100">CogniStruct</h1>
+<p class="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-500">Academic Luminary</p>
+</div>
+<nav class="flex-1">
+<a class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-300 font-sans text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">psychology</span> AI Tutor
+            </a>
+<!-- ACTIVE TAB: Mind Maps -->
+<a class="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full mx-2 px-4 py-3 flex items-center gap-3 font-sans text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hub</span> Mind Maps
+            </a>
+<a class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-300 font-sans text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">quiz</span> Quizzes
+            </a>
+<a class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-300 font-sans text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">style</span> Flashcards
+            </a>
+<a class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all duration-300 font-sans text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined">groups</span> Community
+            </a>
+</nav>
+<div class="mt-auto px-4 pb-4">
+<div class="glass-panel p-4 rounded-xl border border-outline-variant/15 mb-4">
+<p class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1">Daily Goal</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-headline">80% Mastery</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2">
+<div class="bg-primary h-full w-[80%] rounded-full"></div>
+</div>
+</div>
+<div class="space-y-1">
+<a class="text-slate-600 mx-2 px-4 py-2 flex items-center gap-3 text-sm font-semibold transition-all" href="#">
+<span class="material-symbols-outlined">auto_stories</span> Reading Mode
+                </a>
+<a class="text-slate-600 mx-2 px-4 py-2 flex items-center gap-3 text-sm font-semibold transition-all" href="#">
+<span class="material-symbols-outlined">help</span> Help
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Canvas Area -->
+<main class="md:ml-60 min-h-screen relative overflow-hidden bg-surface dot-grid">
+<!-- Floating Toolbar -->
+<div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center gap-4 px-6 py-3 glass-panel rounded-full border border-outline-variant/20 shadow-md">
+<!-- Complexity Pill -->
+<div class="flex bg-surface-container-low rounded-full p-1">
+<button class="px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider uppercase text-on-secondary-fixed-variant hover:bg-white transition-colors">BASIC</button>
+<button class="px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-primary text-white shadow-sm">ADVANCED</button>
+</div>
+<div class="h-6 w-px bg-outline-variant/30 hidden sm:block"></div>
+<!-- Detail Pill -->
+<div class="flex bg-surface-container-low rounded-full p-1">
+<button class="px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-primary text-white shadow-sm">BRIEF</button>
+<button class="px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider uppercase text-on-secondary-fixed-variant hover:bg-white transition-colors">DETAILED</button>
+</div>
+<div class="h-6 w-px bg-outline-variant/30 hidden sm:block"></div>
+<!-- Generate Button -->
+<button class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-white rounded-full font-semibold text-sm shadow-lg shadow-indigo-200 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                Generate
+            </button>
+<div class="h-6 w-px bg-outline-variant/30 hidden sm:block"></div>
+<!-- Controls -->
+<div class="flex items-center gap-1">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">zoom_out</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">download</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">history</span></button>
+</div>
+</div>
+<!-- Mind Map SVG Canvas -->
+<div class="w-full h-screen flex items-center justify-center p-8">
+<svg class="w-full max-w-5xl h-auto drop-shadow-2xl" viewbox="0 0 1000 600">
+<!-- Connections -->
+<g class="stroke-indigo-200/50" fill="none" stroke-width="2">
+<!-- Lines from Root -->
+<path d="M500,300 C500,200 350,150 250,150"></path>
+<path d="M500,300 C500,200 650,150 750,150"></path>
+<path d="M500,300 C500,400 350,450 250,450"></path>
+<path d="M500,300 C500,400 650,450 750,450"></path>
+<!-- Sub connections -->
+<path d="M250,150 L100,100"></path>
+<path d="M250,150 L100,200"></path>
+<path d="M750,150 L900,100"></path>
+</g>
+<!-- Root Node -->
+<foreignobject height="60" width="200" x="400" y="270">
+<div class="bg-gradient-to-br from-primary to-indigo-900 rounded-full flex items-center justify-center h-full px-6 py-2 shadow-xl ring-4 ring-primary-fixed">
+<span class="text-white font-headline text-xl">Quantum Physics</span>
+</div>
+</foreignobject>
+<!-- Level 1 Nodes -->
+<foreignobject height="50" width="200" x="150" y="125">
+<div class="bg-white rounded-xl flex items-center justify-center h-full border border-indigo-100 shadow-lg px-4">
+<span class="text-primary font-semibold text-sm">Wave-Particle Duality</span>
+</div>
+</foreignobject>
+<foreignobject height="50" width="200" x="650" y="125">
+<div class="bg-white rounded-xl flex items-center justify-center h-full border border-indigo-100 shadow-lg px-4">
+<span class="text-primary font-semibold text-sm">Uncertainty Principle</span>
+</div>
+</foreignobject>
+<foreignobject height="50" width="200" x="150" y="425">
+<div class="bg-white rounded-xl flex items-center justify-center h-full border border-indigo-100 shadow-lg px-4">
+<span class="text-primary font-semibold text-sm">Superposition</span>
+</div>
+</foreignobject>
+<foreignobject height="50" width="200" x="650" y="425">
+<div class="bg-white rounded-xl flex items-center justify-center h-full border border-indigo-100 shadow-lg px-4">
+<span class="text-primary font-semibold text-sm">Quantum Entanglement</span>
+</div>
+</foreignobject>
+<!-- Level 2 Nodes (Small context bubbles) -->
+<foreignobject height="40" width="100" x="30" y="80">
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant/20 flex items-center justify-center h-full px-2">
+<span class="text-[10px] font-bold text-on-secondary-fixed-variant uppercase">Photons</span>
+</div>
+</foreignobject>
+<foreignobject height="40" width="100" x="30" y="180">
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant/20 flex items-center justify-center h-full px-2">
+<span class="text-[10px] font-bold text-on-secondary-fixed-variant uppercase">Electrons</span>
+</div>
+</foreignobject>
+<foreignobject height="40" width="100" x="870" y="80">
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant/20 flex items-center justify-center h-full px-2">
+<span class="text-[10px] font-bold text-on-secondary-fixed-variant uppercase">Heisenberg</span>
+</div>
+</foreignobject>
+</svg>
+</div>
+<!-- Side Drawer: Saved Maps -->
+<div class="absolute right-6 top-24 w-72 max-h-[calc(100vh-12rem)] flex flex-col glass-panel rounded-2xl border border-outline-variant/20 shadow-2xl z-20">
+<div class="p-6 border-b border-outline-variant/10">
+<h3 class="font-headline text-lg text-indigo-900">Saved Maps</h3>
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Review Recent Architecture</p>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Map Item -->
+<div class="group p-3 rounded-xl hover:bg-primary-fixed/30 cursor-pointer transition-colors border border-transparent hover:border-primary-fixed">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="close up of old parchment paper with ink sketches and scientific diagrams in a vintage study setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXT7POBWP3VwDNKaB3IErdJbKtFLU-nqLM-_qi9wtv2HLawipTtWRwc9Huylj1N2l9NrrrXBK9HAhhGr7aqYtNI6O6SUKePCfjrYC4aMat5zo-oenjSIDVfdgYx6HM68ZGDq2cjkolQ1YEYwWZmW7_4ITL0U1NegDxcMfsOyzmW1e1j8QuKhZPiWdd1Mx2CGuW3X95RVTG1VplfDO7zv4JQxm6BF5yJ3nmXu-wLnAC76lf5O60YIoxxYSWEdDMrJ9bM6XcjCwZ708"/>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface truncate">Cellular Respiration</p>
+<p class="text-[10px] text-slate-500">24 nodes • Detailed</p>
+</div>
+</div>
+</div>
+<!-- Map Item -->
+<div class="group p-3 rounded-xl hover:bg-primary-fixed/30 cursor-pointer transition-colors border border-transparent hover:border-primary-fixed">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="abstract mathematical equations written on a glass board with soft blue bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGdXsxn7_fRCg8Hc0CQmLqeVN2408JZw0fL8MhHZgmv93lHj8Lt1osg6hwSjhj4g6X8H7drzf-TOjjYC1bfBfckRTQ4UMWUmWC5I4d_BDZ5SreOg3G4VsLY6mR56Y5NsjKzHkr7b24eTnzXmGLTifau8aydL7xGompIDAGTa2nMHZhk6sq58nOYbXd02QMBlkz_3zQ1QVWeAYBu795990A2iSI0sq86l7zfpCfvonM8pwt3mQ4pH-04fKFOTsCzzfggul5ZvLIfHE"/>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface truncate">Calculus III: Vectors</p>
+<p class="text-[10px] text-slate-500">18 nodes • Brief</p>
+</div>
+</div>
+</div>
+<!-- Map Item -->
+<div class="group p-3 rounded-xl hover:bg-primary-fixed/30 cursor-pointer transition-colors border border-transparent hover:border-primary-fixed">
+<div class="flex items-start gap-3">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="minimalist architectural drawing of a greek temple with focus on golden ratio proportions" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN_vEFokytIel4qO5imFVARibIL16YCIdJz4q1ZG5tU6Y0Zhg4G-DPnr3ROcbmxdciw-XZQYI5XeDAktCP7UCSaSpYwGT_CPBOFOK1xNKUOXlp5JIgki8wSBtxsifJ7JwHW59G5o_yF_K9sOh2DE7feZZ8A_1Ygku9fYqLaUOvWdF5iinoUXDfvlnMwAQbjd1t5lwxuAGMtfckc0ltmcWJq6PbcX2-wRaattEtROU4eBK5SlRRcrVbn5hVPuSMyIMUDmj--hZh7LQ"/>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface truncate">Classical Architecture</p>
+<p class="text-[10px] text-slate-500">12 nodes • Advanced</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-indigo-50/50 rounded-b-2xl">
+<button class="w-full py-2 text-[11px] font-bold text-primary uppercase tracking-widest hover:underline">View All Maps</button>
+</div>
+</div>
+<!-- Floating Action (Contextual Suppression Rule Check: FAB is typically for Home/Dashboard, but for a MindMap creation screen, a 'New Node' action is sometimes acceptable. However, instructions mandate suppression on detailed screens if not perfectly aligned. Let's stick to the generated UI elements.) -->
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center h-20 px-2 pb-safe bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] z-50 rounded-t-2xl">
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Tutor</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 rounded-xl px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hub</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Maps</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Quiz</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200">
+<span class="material-symbols-outlined">style</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Cards</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Social</span>
+</div>
+</nav>
+</body></html>

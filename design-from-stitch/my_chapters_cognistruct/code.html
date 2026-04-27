@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniStruct - Subject Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f1f4f9",
+                        "inverse-on-surface": "#eff1f6",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "primary-fixed": "#e1e0ff",
+                        "on-primary-container": "#d9d8ff",
+                        "secondary-container": "#d5e3fc",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "primary-container": "#4b4dd8",
+                        "surface-tint": "#494bd6",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary-fixed": "#07006c",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "inverse-surface": "#2d3135",
+                        "surface": "#f7f9fe",
+                        "primary": "#3130c0",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464555",
+                        "secondary-fixed": "#d5e3fc",
+                        "surface-bright": "#f7f9fe",
+                        "surface-dim": "#d8dadf",
+                        "on-background": "#181c20",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef3",
+                        "surface-variant": "#e0e2e7",
+                        "outline": "#777587",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "background": "#f7f9fe",
+                        "on-surface": "#181c20",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-secondary-container": "#57657a",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#515f74",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "inverse-primary": "#c0c1ff",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary": "#7e3000",
+                        "surface-container-high": "#e6e8ed"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "display": ["Instrument Serif", "serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .bg-indigo-gradient {
+            background: linear-gradient(135deg, #3130c0 0%, #4b4dd8 100%);
+        }
+        .glass-panel {
+            background: rgba(247, 249, 254, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- Mobile Top Bar (Generated from TopNavBar JSON) -->
+<header class="lg:hidden flex justify-between items-center px-6 w-full fixed top-0 z-50 h-16 bg-white/80 backdrop-blur-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)]">
+<span class="text-xl font-serif text-indigo-700">CogniStruct</span>
+<button class="tap-highlight-transparent hover:opacity-80 transition-opacity text-indigo-700">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- Sidebar Navigation (Generated from SideNavBar JSON) -->
+<aside class="hidden md:flex flex-col h-full py-6 px-4 gap-2 w-[240px] h-screen fixed left-0 top-0 bg-slate-50 shadow-sm z-40">
+<div class="mb-8 px-2">
+<div class="text-2xl font-serif italic text-indigo-700 mb-1">CogniStruct</div>
+<div class="text-xs text-slate-500 font-medium">Chapter 1: Quantum Physics</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-sm font-medium">Breakdown</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="text-sm font-medium">Understand</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="text-sm font-medium">Mind Map</span>
+</a>
+<!-- Active State Logic: Mapping 'Home' intent to Subjects as primary navigation hub -->
+<a class="flex items-center gap-3 px-4 py-2.5 bg-indigo-100 text-indigo-800 rounded-full font-semibold scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="library_books" style="font-variation-settings: 'FILL' 1;">library_books</span>
+<span class="text-sm font-medium">Subjects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="text-sm font-medium">Leaderboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-sm font-medium">Classmates</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-200 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-4">
+<div class="glass-panel p-4 rounded-xl shadow-sm border border-outline-variant/15">
+<div class="flex items-center gap-2 text-indigo-700 font-bold text-sm mb-1">
+<span class="material-symbols-outlined text-lg" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+                    Points: 1,240 XP
+                </div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-indigo-gradient h-full w-3/4 rounded-full"></div>
+</div>
+</div>
+<button class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 transition-colors duration-300 rounded-full w-full">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+<span class="text-sm font-medium">Theme Switcher</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-[240px] pt-20 md:pt-12 px-6 pb-20">
+<div class="max-w-5xl mx-auto">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h1 class="font-display text-5xl md:text-6xl text-on-background mb-3">
+                        Good morning, Aryan 👋
+                    </h1>
+<p class="text-secondary text-lg font-medium opacity-80">
+                        Which chapter are you studying today?
+                    </p>
+</div>
+<button class="bg-indigo-gradient text-on-primary px-6 py-3.5 rounded-[10px] font-semibold flex items-center gap-2 shadow-[0_4px_16px_rgba(49,48,192,0.2)] hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                    Start new chapter
+                </button>
+</header>
+<!-- Subject Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1: Quantum Physics -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)] group hover:translate-y-[-4px] transition-transform duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-6">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-[0.6875rem] font-bold tracking-wider uppercase rounded-full">
+                            Physics
+                        </span>
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</div>
+</div>
+<h3 class="font-display text-2xl text-on-background mb-4">Quantum Physics</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[0.6875rem] font-semibold mb-1.5 uppercase tracking-wide text-slate-500">
+<span>Mastery</span>
+<span>74%</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-indigo-gradient h-full w-[74%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span class="text-[0.6875rem] font-medium">Last accessed 2h ago</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Organic Chemistry -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)] group hover:translate-y-[-4px] transition-transform duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-6">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[0.6875rem] font-bold tracking-wider uppercase rounded-full">
+                            Chemistry
+                        </span>
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-tertiary group-hover:bg-tertiary group-hover:text-on-tertiary transition-colors">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+</div>
+</div>
+<h3 class="font-display text-2xl text-on-background mb-4">Organic Structures</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[0.6875rem] font-semibold mb-1.5 uppercase tracking-wide text-slate-500">
+<span>Mastery</span>
+<span>42%</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[42%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span class="text-[0.6875rem] font-medium">Last accessed Yesterday</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Macroeconomics -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)] group hover:translate-y-[-4px] transition-transform duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-6">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-[0.6875rem] font-bold tracking-wider uppercase rounded-full">
+                            Economics
+                        </span>
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+<h3 class="font-display text-2xl text-on-background mb-4">Global Trade Policy</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[0.6875rem] font-semibold mb-1.5 uppercase tracking-wide text-slate-500">
+<span>Mastery</span>
+<span>18%</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full w-[18%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span class="text-[0.6875rem] font-medium">Last accessed 4 days ago</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Linear Algebra -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)] group hover:translate-y-[-4px] transition-transform duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-6">
+<span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-[0.6875rem] font-bold tracking-wider uppercase rounded-full">
+                            Mathematics
+                        </span>
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="functions">functions</span>
+</div>
+</div>
+<h3 class="font-display text-2xl text-on-background mb-4">Vector Spaces</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[0.6875rem] font-semibold mb-1.5 uppercase tracking-wide text-slate-500">
+<span>Mastery</span>
+<span>92%</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-indigo-gradient h-full w-[92%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span class="text-[0.6875rem] font-medium">Completed 1 week ago</span>
+</div>
+</div>
+</div>
+<!-- Empty State Card -->
+<button class="border-2 border-dashed border-outline-variant p-6 rounded-xl flex flex-col items-center justify-center gap-4 group hover:border-indigo-400 hover:bg-indigo-50/30 transition-all duration-300 min-h-[220px]">
+<div class="w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center text-slate-400 group-hover:text-indigo-600 group-hover:bg-indigo-100 transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</div>
+<div class="text-center">
+<h4 class="font-semibold text-on-background">Add new chapter</h4>
+<p class="text-xs text-slate-400 mt-1">Upload a PDF or paste lecture notes</p>
+</div>
+</button>
+</div>
+<!-- Bento Featured Section -->
+<section class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 bg-primary-container rounded-2xl p-8 text-on-primary relative overflow-hidden group">
+<div class="relative z-10">
+<h2 class="font-display text-4xl mb-4">Mastery Challenge</h2>
+<p class="max-w-md opacity-90 mb-8 leading-relaxed">
+                            You're 3 questions away from reaching 'Elite' status in Quantum Physics. Test your knowledge now and earn 250 XP bonus.
+                        </p>
+<button class="bg-white text-primary px-6 py-3 rounded-full font-bold text-sm hover:bg-opacity-90 transition-all">
+                            Take the Quiz
+                        </button>
+</div>
+<div class="absolute right-[-10%] bottom-[-10%] opacity-20 transform group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[200px]" data-icon="psychology">psychology</span>
+</div>
+</div>
+<div class="bg-tertiary-container rounded-2xl p-8 text-on-tertiary relative overflow-hidden flex flex-col justify-between">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl mb-4" data-icon="emoji_events">emoji_events</span>
+<h3 class="font-display text-3xl">Active Streak</h3>
+<p class="text-3xl font-bold mt-2">12 Days</p>
+</div>
+<p class="text-xs opacity-80 mt-4 italic">"Consistency is the key to mastery."</p>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Tooltip for AI Assistant (Design Extension) -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="w-16 h-16 rounded-full bg-indigo-gradient text-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-transform group">
+<span class="material-symbols-outlined text-3xl" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="absolute right-20 bg-inverse-surface text-inverse-on-surface px-4 py-2 rounded-lg text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Ask CogniStruct AI
+            </span>
+</button>
+</div>
+</body></html>

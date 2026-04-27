@@ -1,9 +1,5 @@
 import React from 'react';
 import { AppMode, Theme } from '../types';
-import { 
-  LayoutDashboard, Network, BrainCircuit, Library, MessageCircleQuestion, 
-  RotateCcw, BarChart3, Sun, Moon, Book, ChevronLeft, BookOpenText, X, LogOut, User, Users
-} from 'lucide-react';
 
 interface SidebarProps {
   currentMode: AppMode;
@@ -12,173 +8,217 @@ interface SidebarProps {
   setTheme: (theme: Theme) => void;
   onGoHome: () => void;
   activeChapterTitle?: string;
+  activeChapterSubject?: string;
   isOpen: boolean;
   onClose: () => void;
   onSignOut?: () => void;
+  totalPoints?: number;
+  isAdmin?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  currentMode, setMode, theme, setTheme, onGoHome, activeChapterTitle, isOpen, onClose, onSignOut 
+const NAV_ITEMS = [
+  { mode: AppMode.SUBJECT_SELECTION, icon: 'library_books',     label: 'Subjects',        global: true },
+  { mode: AppMode.LEADERBOARD,       icon: 'emoji_events',       label: 'Leaderboard',     global: true },
+  { mode: AppMode.COMMUNITY,         icon: 'groups',             label: 'Community',       global: true },
+  { mode: AppMode.PROFILE,           icon: 'person',             label: 'Profile',         global: true },
+  { mode: AppMode.CONTACT,           icon: 'support_agent',      label: 'Support',         global: true },
+];
+
+const CHAPTER_ITEMS = [
+  { mode: AppMode.DASHBOARD,     icon: 'analytics',       label: 'Breakdown'         },
+  { mode: AppMode.WHOLE_CHAPTER, icon: 'psychology',      label: 'Understand'        },
+  { mode: AppMode.MIND_MAP,      icon: 'hub',             label: 'Mind Map'          },
+  { mode: AppMode.ACTIVE_RECALL, icon: 'bolt',            label: 'Active Recall'     },
+  { mode: AppMode.FLASHCARDS,    icon: 'style',           label: 'Flashcards'        },
+  { mode: AppMode.DOUBT_SOLVER,  icon: 'forum',           label: 'Doubt Solver'      },
+  { mode: AppMode.REVISION,      icon: 'replay',          label: 'Revision'          },
+  { mode: AppMode.QUIZ,          icon: 'quiz',            label: 'Quiz'              },
+];
+
+const NavItem: React.FC<{
+  icon: string; label: string; active: boolean; onClick: () => void;
+}> = ({ icon, label, active, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center gap-3 mx-0 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+      active
+        ? 'bg-primary-fixed text-primary'
+        : 'text-secondary hover:bg-surface-container hover:text-on-surface'
+    }`}
+  >
+    <span
+      className="material-symbols-outlined text-[20px]"
+      style={active ? { fontVariationSettings: "'FILL' 1" } : {}}
+    >
+      {icon}
+    </span>
+    <span className="tracking-tight">{label}</span>
+  </button>
+);
+
+const Sidebar: React.FC<SidebarProps> = ({
+  currentMode, setMode, theme, setTheme,
+  onGoHome, activeChapterTitle, activeChapterSubject, isOpen, onClose,
+  onSignOut, totalPoints, isAdmin,
 }) => {
-  const menuItems = [
-    { mode: AppMode.DASHBOARD, icon: LayoutDashboard, label: 'Breakdown' },
-    { mode: AppMode.WHOLE_CHAPTER, icon: BookOpenText, label: 'Understand Chapter' },
-    { mode: AppMode.MIND_MAP, icon: Network, label: 'Mind Map' },
-    { mode: AppMode.ACTIVE_RECALL, icon: BrainCircuit, label: 'Active Recall' },
-    { mode: AppMode.FLASHCARDS, icon: Library, label: 'Flashcards' },
-    { mode: AppMode.DOUBT_SOLVER, icon: MessageCircleQuestion, label: 'Doubt Solver' },
-    { mode: AppMode.REVISION, icon: RotateCcw, label: 'Revision Mode' },
-  ];
+  const isSS = activeChapterSubject === 'Social Science';
+  const pts = totalPoints ?? 0;
+  const xpPct = Math.min(100, (pts % 1000) / 10); // 0-100% within current 1000-pt band
 
   return (
     <>
-    <aside 
-      className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 
-        flex flex-col transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0
-      `}
-    >
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={onGoHome}>
-          <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center shrink-0">
-            <span className="text-white font-serif font-bold text-lg">C</span>
+      {/* Desktop sidebar */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-50 w-[240px] flex flex-col
+          bg-surface
+          transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+        `}
+        style={{ boxShadow: 'none', borderRight: '1px solid rgba(199,196,216,0.18)' }}
+      >
+        {/* Brand */}
+        <div className="flex items-center justify-between px-5 pt-7 pb-5">
+          <div
+            className="flex items-center gap-2.5 cursor-pointer"
+            onClick={() => { onGoHome(); onClose(); }}
+          >
+            <div className="w-9 h-9 rounded-xl primary-gradient flex items-center justify-center shrink-0 shadow-glow">
+              <span className="material-symbols-outlined text-white text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
+            </div>
+            <div>
+              <h1 className="font-serif italic text-lg text-primary leading-none">CogniStruct</h1>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-secondary mt-0.5">Academic Luminary</p>
+            </div>
           </div>
-          <span className="font-serif font-bold text-slate-800 dark:text-white text-lg tracking-tight">CogniStruct</span>
+          <button onClick={onClose} className="md:hidden text-secondary hover:text-on-surface p-1">
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
         </div>
-        <button onClick={onClose} className="md:hidden text-slate-500 hover:text-slate-800 dark:hover:text-white">
-          <X className="w-6 h-6" />
-        </button>
-      </div>
 
-      {(activeChapterTitle || currentMode === AppMode.PROFILE || currentMode === AppMode.COMMUNITY) && (
-        <div className="px-6 pt-4 pb-0">
-           <button 
-             onClick={onGoHome}
-             className="w-full flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors p-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800"
-           >
-             <ChevronLeft className="w-3 h-3" />
-             Back to Subjects
-           </button>
-        </div>
-      )}
-
-      <div className="px-6 py-4">
-         <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
-            <button 
-              onClick={() => setTheme(Theme.LIGHT)}
-              className={`flex-1 p-1.5 rounded flex justify-center ${theme === Theme.LIGHT ? 'bg-white shadow text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
-              title="Light Mode"
-            >
-               <Sun className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => setTheme(Theme.DARK)}
-              className={`flex-1 p-1.5 rounded flex justify-center ${theme === Theme.DARK ? 'bg-slate-700 shadow text-white' : 'text-slate-400 hover:text-slate-600'}`}
-               title="Dark Mode"
-            >
-               <Moon className="w-4 h-4" />
-            </button>
-             <button 
-              onClick={() => setTheme(Theme.READING)}
-              className={`flex-1 p-1.5 rounded flex justify-center ${theme === Theme.READING ? 'bg-[#f0e6d2] shadow text-[#5c4b37]' : 'text-slate-400 hover:text-slate-600'}`}
-               title="Reading Mode"
-            >
-               <Book className="w-4 h-4" />
-            </button>
-         </div>
-      </div>
-
-      <nav className="flex-1 overflow-y-auto py-2 space-y-1 px-4 flex flex-col">
-        {activeChapterTitle ? (
-            <>
-                <div className="px-3 mb-2">
-                     <p className="text-xs font-bold text-primary-600 dark:text-primary-400 truncate">{activeChapterTitle}</p>
-                </div>
-                {menuItems.map((item) => (
-                <button
-                    key={item.mode}
-                    onClick={() => setMode(item.mode)}
-                    className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
-                    ${currentMode === item.mode
-                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-900 dark:text-primary-100 shadow-sm ring-1 ring-primary-100 dark:ring-primary-800'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                >
-                    <item.icon className={`w-5 h-5 ${currentMode === item.mode ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                    <span className="font-medium text-sm">{item.label}</span>
-                </button>
-                ))}
-
-                <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
-                <button
-                    onClick={() => setMode(AppMode.ADMIN)}
-                    className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
-                    ${currentMode === AppMode.ADMIN
-                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                        : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                >
-                    <BarChart3 className="w-5 h-5" />
-                    <span className="font-medium text-sm">Teacher View</span>
-                </button>
-                </div>
-            </>
-        ) : (
-             <div className="px-4 text-center text-slate-400 dark:text-slate-500 mt-10">
-                <Book className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                <p className="text-sm">Select a subject</p>
-             </div>
+        {/* Active chapter label */}
+        {activeChapterTitle && (
+          <div className="px-5 pb-3">
+            <div className="flex items-center gap-2 px-3 py-2 bg-primary-fixed rounded-xl">
+              <span className="material-symbols-outlined text-primary text-[14px]">menu_book</span>
+              <p className="text-xs font-semibold text-primary truncate">{activeChapterTitle}</p>
+            </div>
+          </div>
         )}
-        
-        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
-          <button
-            onClick={onGoHome}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
-            ${currentMode === AppMode.SUBJECT_SELECTION
-                ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <BookOpenText className="w-5 h-5" />
-            <span className="font-medium text-sm">Select Subject</span>
-          </button>
 
-          <button
-            onClick={() => setMode(AppMode.COMMUNITY)}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
-            ${currentMode === AppMode.COMMUNITY
-                ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <Users className="w-5 h-5" />
-            <span className="font-medium text-sm">Classmates</span>
-          </button>
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5">
+          {/* Chapter tools */}
+          {activeChapterTitle && (
+            <>
+              <p className="px-4 pt-2 pb-1.5 text-[10px] font-bold text-secondary uppercase tracking-widest">Chapter Tools</p>
+              {CHAPTER_ITEMS.map(item => (
+                <NavItem
+                  key={item.mode}
+                  icon={item.icon}
+                  label={item.label}
+                  active={currentMode === item.mode}
+                  onClick={() => { setMode(item.mode); onClose(); }}
+                />
+              ))}
+              {/* Timeline — exclusive to Social Science chapters */}
+              {isSS && (
+                <NavItem
+                  icon="timeline"
+                  label="Timeline"
+                  active={currentMode === AppMode.TIMELINE}
+                  onClick={() => { setMode(AppMode.TIMELINE); onClose(); }}
+                />
+              )}
+              {isAdmin && (
+                <NavItem
+                  icon="admin_panel_settings"
+                  label="Admin Dashboard"
+                  active={currentMode === AppMode.ADMIN}
+                  onClick={() => { setMode(AppMode.ADMIN); onClose(); }}
+                />
+              )}
+              <div className="my-2 mx-4 border-t border-outline-variant/20" />
+            </>
+          )}
 
-          <button
-            onClick={() => setMode(AppMode.PROFILE)}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group
-            ${currentMode === AppMode.PROFILE
-                ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <User className="w-5 h-5" />
-            <span className="font-medium text-sm">Profile</span>
-          </button>
-          
+          {/* Global nav */}
+          <p className="px-4 pt-1 pb-1.5 text-[10px] font-bold text-secondary uppercase tracking-widest">Navigation</p>
+          {NAV_ITEMS.map(item => (
+            <NavItem
+              key={item.mode}
+              icon={item.icon}
+              label={item.label}
+              active={currentMode === item.mode || (item.mode === AppMode.SUBJECT_SELECTION && !activeChapterTitle && currentMode === AppMode.SUBJECT_SELECTION)}
+              onClick={() => {
+                if (item.mode === AppMode.SUBJECT_SELECTION) onGoHome();
+                else setMode(item.mode);
+                onClose();
+              }}
+            />
+          ))}
+        </nav>
+
+        {/* Bottom section */}
+        <div className="px-4 pb-5 space-y-3">
+          {/* XP glassmorphic card */}
+          {pts > 0 && (
+            <div className="glass-panel p-3.5 rounded-xl border border-outline-variant/20">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5 text-primary font-bold text-xs">
+                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                  {pts.toLocaleString()} XP
+                </div>
+                <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">
+                  Lv {Math.floor(pts / 1000) + 1}
+                </span>
+              </div>
+              <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="primary-gradient h-full rounded-full transition-all duration-700"
+                  style={{ width: `${xpPct}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Theme switcher */}
+          <div className="flex p-1 bg-surface-container-low rounded-xl">
+            {[
+              { t: Theme.LIGHT,   icon: 'light_mode',   title: 'Light' },
+              { t: Theme.DARK,    icon: 'dark_mode',    title: 'Dark'  },
+              { t: Theme.READING, icon: 'auto_stories', title: 'Sepia' },
+            ].map(({ t, icon, title }) => (
+              <button
+                key={t}
+                onClick={() => setTheme(t)}
+                title={title}
+                className={`flex-1 p-1.5 rounded-lg flex justify-center transition-all ${
+                  theme === t
+                    ? t === Theme.DARK
+                      ? 'bg-surface-container-high text-on-surface shadow-sm'
+                      : t === Theme.READING
+                      ? 'bg-[#f0e6d2] text-[#5c4b37] shadow-sm'
+                      : 'bg-surface-container-lowest text-on-surface shadow-sm'
+                    : 'text-outline hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">{icon}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Sign out */}
           <button
             onClick={onSignOut}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-sm font-semibold text-secondary hover:text-error hover:bg-error-container/30 transition-all"
           >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium text-sm">Sign Out</span>
+            <span className="material-symbols-outlined text-[18px]">logout</span>
+            Sign Out
           </button>
         </div>
-      </nav>
-    </aside>
+      </aside>
     </>
   );
 };

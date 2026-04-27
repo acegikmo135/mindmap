@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile - CogniStruct</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f1f4f9",
+                        "inverse-on-surface": "#eff1f6",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "primary-fixed": "#e1e0ff",
+                        "on-primary-container": "#d9d8ff",
+                        "secondary-container": "#d5e3fc",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "primary-container": "#4b4dd8",
+                        "surface-tint": "#494bd6",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary-fixed": "#07006c",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "inverse-surface": "#2d3135",
+                        "surface": "#f7f9fe",
+                        "primary": "#3130c0",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464555",
+                        "secondary-fixed": "#d5e3fc",
+                        "surface-bright": "#f7f9fe",
+                        "surface-dim": "#d8dadf",
+                        "on-background": "#181c20",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef3",
+                        "surface-variant": "#e0e2e7",
+                        "outline": "#777587",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "background": "#f7f9fe",
+                        "on-surface": "#181c20",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-secondary-container": "#57657a",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#515f74",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "inverse-primary": "#c0c1ff",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary": "#7e3000",
+                        "surface-container-high": "#e6e8ed"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "display": ["Instrument Serif", "serif"],
+                        "technical": ["JetBrains Mono", "monospace"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(247, 249, 254, 0.8); backdrop-filter: blur(20px); }
+        .indigo-gradient { background: linear-gradient(135deg, #3130c0 0%, #4b4dd8 100%); }
+        .ghost-border { outline: 1px solid rgba(199, 196, 216, 0.15); }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 w-[240px] py-6 px-4 gap-2 bg-slate-50 dark:bg-slate-900 shadow-sm z-40">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 rounded-xl indigo-gradient flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<h1 class="text-2xl font-serif italic text-indigo-700 dark:text-indigo-400">CogniStruct</h1>
+<p class="text-[10px] text-slate-500 font-medium">Chapter 1: Quantum Physics</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm font-medium">Breakdown</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-sm font-medium">Understand</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-sm font-medium">Mind Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">library_books</span>
+<span class="text-sm font-medium">Subjects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-sm font-medium">Leaderboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Classmates</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200 rounded-full font-semibold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-300 rounded-full group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
+<div class="glass p-4 rounded-xl shadow-sm mb-4">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs text-slate-500 font-semibold">Points: 1,240 XP</span>
+<span class="material-symbols-outlined text-amber-500 text-lg">star</span>
+</div>
+<div class="w-full bg-slate-200 rounded-full h-1.5">
+<div class="bg-indigo-600 h-1.5 rounded-full w-3/4"></div>
+</div>
+</div>
+<button class="flex items-center gap-3 w-full px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors rounded-lg">
+<span class="material-symbols-outlined">dark_mode</span>
+<span class="text-sm font-medium">Theme Switcher</span>
+</button>
+</div>
+</aside>
+<!-- Mobile Top Bar -->
+<header class="lg:hidden fixed top-0 w-full z-50 h-16 flex justify-between items-center px-6 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)]">
+<h2 class="text-xl font-serif text-indigo-700 dark:text-indigo-400">CogniStruct</h2>
+<button class="text-slate-500 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="pt-20 pb-12 md:pt-12 md:ml-[240px] px-6 min-h-screen">
+<div class="max-w-2xl mx-auto">
+<!-- Header Profile Section -->
+<section class="flex flex-col items-center text-center mb-12">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-white shadow-lg cursor-pointer">
+<img alt="Aryan Sharma" class="w-full h-full object-cover" data-alt="portrait of a confident young man with a friendly expression in soft natural lighting, high quality photography style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASbMkXtbCf3fj0YY3ovRqHk_Dg5OJEgJr4mRy2h3bo5Mk71J_r58eTJX0hgduWWmZGZ5ePXDapWiiU6NjB_KF_cOHu31q1iH5Qy1L-uV7rJHVrn1U6VK1ArROJ3H0T1civOFdXC_dB9Xkees6yKpTykRQH0nw9L5n0ejfZ4MlalWJKALEG8Hcg-FhHA3pZPPpyb9p9hrX7MfgRGBBofXG1fN2HqFiD0I0UqL1wfKuDmFixomKEYubvcGPXNFfnY6V4R7zNV9YNNRk"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<span class="material-symbols-outlined text-white text-xl">photo_camera</span>
+</div>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-white rounded-full p-1.5 shadow-md">
+<span class="material-symbols-outlined text-indigo-600 text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h2 class="mt-6 font-display text-4xl text-on-background">Aryan Sharma</h2>
+<p class="text-secondary text-sm font-medium">aryan.sharma@edu.cognistruct.com</p>
+<div class="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-full shadow-sm">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-xs font-bold tracking-wide uppercase">1,240 Points</span>
+</div>
+</section>
+<!-- Form Card -->
+<div class="relative bg-surface-container-lowest rounded-2xl p-8 shadow-[0_4px_24px_rgba(15,23,42,0.04)] ghost-border">
+<!-- Feedback Indicator -->
+<div class="absolute top-8 right-8 flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold animate-pulse">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                    Saved ✓
+                </div>
+<div class="space-y-8">
+<!-- Full Name -->
+<div class="space-y-2">
+<label class="flex items-center gap-2 text-xs font-bold text-secondary tracking-wider uppercase px-1" for="full_name">
+<span class="material-symbols-outlined text-lg">person</span>
+                            Full Name
+                        </label>
+<input class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium ghost-border" id="full_name" type="text" value="Aryan Sharma"/>
+</div>
+<!-- Grade Selection -->
+<div class="space-y-2">
+<label class="flex items-center gap-2 text-xs font-bold text-secondary tracking-wider uppercase px-1" for="grade">
+<span class="material-symbols-outlined text-lg">school</span>
+                            Grade
+                        </label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium ghost-border" id="grade">
+<option>Class 6</option>
+<option>Class 7</option>
+<option>Class 8</option>
+<option selected="">Class 9</option>
+<option>Class 10</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<!-- Hobbies & Interests -->
+<div class="space-y-2">
+<label class="flex items-center gap-2 text-xs font-bold text-secondary tracking-wider uppercase px-1" for="hobbies">
+<span class="material-symbols-outlined text-lg">interests</span>
+                            Hobbies &amp; Interests
+                        </label>
+<textarea class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3.5 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium ghost-border" id="hobbies" placeholder="What do you enjoy learning or doing in your free time?" rows="4">Quantum computing, astrophysics, digital illustration, and playing the piano.</textarea>
+</div>
+<!-- Action Buttons -->
+<div class="pt-6 flex items-center justify-end gap-4">
+<button class="px-6 py-2.5 text-sm font-semibold text-secondary hover:bg-surface-container-high rounded-xl transition-colors">
+                            Discard
+                        </button>
+<button class="px-8 py-2.5 text-sm font-semibold text-white indigo-gradient rounded-xl shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
+                            Save Profile
+                        </button>
+</div>
+</div>
+</div>
+<!-- Decorative Stats Summary (Asymmetric Layout element) -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-indigo-50 p-6 rounded-2xl border-none">
+<span class="material-symbols-outlined text-indigo-600 mb-3" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<h4 class="text-indigo-900 font-bold text-lg leading-tight">7 Day Streak</h4>
+<p class="text-indigo-700/70 text-sm mt-1">Keep it up! You're in the top 5% of active learners this week.</p>
+</div>
+<div class="bg-tertiary-fixed/30 p-6 rounded-2xl border-none">
+<span class="material-symbols-outlined text-tertiary mb-3" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<h4 class="text-on-tertiary-fixed font-bold text-lg leading-tight">12 Chapters Completed</h4>
+<p class="text-on-tertiary-fixed-variant/70 text-sm mt-1">Quantum Physics is your strongest subject currently.</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

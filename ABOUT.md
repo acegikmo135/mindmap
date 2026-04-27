@@ -1,108 +1,82 @@
 # About CogniStruct
 
-**CogniStruct** is an advanced, AI-powered educational platform designed to transform passive reading into active learning. Specifically tailored for students (with a focus on NCERT and 8th-grade curriculum), it leverages cutting-edge cognitive science principles and generative AI to ensure deep understanding and long-term retention of academic content.
+**CogniStruct** is an advanced, AI-native educational platform meticulously designed to transform how students in **Classes 6–10** engage with their curriculum. By merging state-of-the-art Generative AI with established principles of cognitive science, CogniStruct moves beyond the limitations of passive learning, empowering students to achieve deep conceptual mastery and long-term retention.
 
 ---
 
-## 🚀 Core Philosophy: The Science of Learning
+## 🧠 The Science of Learning: Beyond Passive Reading
 
-CogniStruct is built on three pillars of cognitive science:
+CogniStruct is built on a "Retain-Recall-Master" framework derived from cognitive psychology:
 
-1.  **Active Recall:** Instead of just re-reading, students are forced to retrieve information from their memory through AI-generated conceptual questions.
-2.  **Spaced Repetition:** The platform identifies weak areas and schedules reviews (Flashcards) at optimal intervals to prevent the "forgetting curve."
-3.  **Chunking & Scaffolding:** Complex chapters are broken down into digestible "Concepts," allowing students to build a solid foundation before moving to advanced topics.
-
----
-
-## ✨ Key Features
-
-### 1. AI-Powered Chapter Generation
-Users can select from pre-filled NCERT chapters or generate a custom learning path for any topic. The AI (Gemini 3 Flash) automatically:
--   Segments the topic into logical concepts.
--   Estimates study time for each part.
--   Identifies prerequisites and dependencies.
-
-### 2. Interactive Mind Maps
-Visual learners can explore a hierarchical representation of the chapter.
--   **Dynamic Generation:** AI creates a structured map of facts, concepts, and examples.
--   **Visual Hierarchy:** Helps students understand the "big picture" and how different ideas connect.
-
-### 3. Active Recall Module
-For every concept, the AI generates a unique, conceptual question.
--   **Conceptual Testing:** Moves beyond simple "what is" questions to "how" and "why."
--   **AI Evaluation:** The student's answer is evaluated by a "Friendly AI Tutor" that provides encouraging feedback and clarifies misconceptions.
-
-### 4. Spaced Repetition Flashcards
-A built-in flashcard system that tracks mastery.
--   **Auto-Generation:** AI creates high-quality cards based on the chapter content.
--   **Mastery Tracking:** Cards are categorized (Again, Hard, Good, Easy) to optimize review schedules.
-
-### 5. Real-time Doubt Solver (AI Tutor)
-A sophisticated chatbot designed to act as a personal tutor.
--   **Context Awareness:** The AI knows exactly what chapter and concept the student is studying.
--   **LaTeX Support:** Renders complex mathematical formulas and scientific equations beautifully using KaTeX.
--   **Analogy-Based Teaching:** Explains difficult concepts using real-world analogies suitable for 13-14 year olds.
-
-### 6. Multi-Mode Reading
--   **Whole Chapter:** Access the full content for traditional reading.
--   **Revision Mode:** AI-generated summaries and key points for quick last-minute reviews.
-
-### 7. Community & Social Learning
--   **Profiles:** Personalized user profiles with grade and school tracking.
--   **Friend System:** Connect with classmates, send friend requests, and see who's online.
--   **Collaborative Spirit:** Encourages a community-driven approach to mastering subjects.
+1.  **Fighting the Forgetting Curve:** Research by Hermann Ebbinghaus shows that we forget 70% of new information within 24 hours. CogniStruct’s **Spaced Repetition (SRS)** system strategically schedules reviews right as memory begins to fade, effectively flattening the forgetting curve.
+2.  **The Testing Effect:** Studies show that the act of *retrieving* information (Active Recall) strengthens neural pathways more than simply re-reading. Our AI generates conceptual questions that force the brain to work, leading to 300% better retention.
+3.  **Scaffolding & Cognitive Load:** By breaking complex NCERT chapters into "Concepts" and "Sub-concepts" (Chunking), we prevent cognitive overload, allowing students to build mental models step-by-step.
+4.  **Dual Coding:** CogniStruct uses both verbal explanations and visual **Mind Maps** to encode information in two different ways, making it easier to retrieve later.
 
 ---
 
-## 🛠️ Technical Stack
+## ✨ Key Features & Implementation Details
 
-### Frontend
--   **React 19:** Utilizing the latest React features for a high-performance, modern UI.
--   **TypeScript:** Ensuring type safety and robust code across the entire application.
--   **Vite:** Lightning-fast build tool and development server.
--   **Tailwind CSS:** Utility-first styling for a clean, responsive, and highly customizable design.
--   **Lucide React:** A beautiful, consistent icon set.
--   **Framer Motion:** Smooth, physics-based animations for an "app-like" feel.
+### 🛠️ AI-Powered Learning Path Generation
+CogniStruct doesn't just display text; it builds a curriculum.
+-   **Structured Hierarchy:** Generates 5–8 distinct concepts per chapter with estimated study times and prerequisites.
+-   **Dynamic Progress Tracking:** Concepts move through a lifecycle of `LOCKED` → `NOT_STARTED` → `IN_PROGRESS` → `MASTERED`.
+-   **Adaptive Prerequisites:** Ensures students have a solid foundation before unlocking advanced sub-topics.
 
-### Backend & Infrastructure
--   **Supabase:**
-    -   **Authentication:** Secure Google and Email/Password login.
-    -   **PostgreSQL Database:** Real-time data synchronization for user progress, chat history, and social features.
--   **OneSignal:** Integrated push notifications to remind students of their study goals and flashcard reviews.
+### 🗺️ Intelligent Mind Maps
+Visualizing connections through a hierarchical graph interface.
+-   **Algorithm-Driven Layout:** Uses a horizontal tree layout algorithm with custom horizontal and vertical spacing to ensure readability on all screens.
+-   **Semantic Node Types:** Nodes are categorized as `CONCEPT` (core idea), `EXAMPLE` (practical application), or `FACT` (verified data point).
+-   **Interactive Exploration:** Supports semantic zooming, node collapsing/expanding, and high-resolution PNG exports for offline study.
 
-### AI Engine
--   **Google Gemini 3 Flash:** The core intelligence of the platform.
-    -   **Structured Outputs:** Using JSON schemas to generate consistent learning paths and mind maps.
-    -   **Thinking Mode:** Optimized for low-latency, high-reasoning tutoring.
-    -   **Multimodal Ready:** Capable of processing text and (in future) images/audio.
+### 💬 Subject-Aware AI Tutor (Doubt Solver)
+A 24/7 personal tutor that adapts its pedagogical style based on the subject:
+-   **Mathematics:** Focuses on step-by-step derivation and logical flow.
+-   **Sciences:** Employs real-world analogies (e.g., explaining photosynthesis through a "kitchen factory" analogy).
+-   **Humanities:** Focuses on the "Who, What, When, and Why" to build historical and social context.
+-   **LaTeX Rendering:** Beautifully renders complex equations (e.g., $E = mc^2$ or $\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$) using KaTeX.
 
----
+### 🗂️ Spaced Repetition Flashcards
+A digital version of the Leinter System, powered by AI.
+-   **3D Interactive Interface:** High-performance 3D flip animations using CSS transforms for an "app-like" feel.
+-   **Mastery Rating:** Students rate cards as `Again`, `Hard`, `Good`, or `Easy`.
+-   **AI Auto-Generation:** Instantly creates 5-10 high-quality cards based on any chapter's core facts and definitions.
 
-## 🎨 Special Implementation Details
-
-### 📐 LaTeX & Markdown Rendering
-CogniStruct uses a custom `MarkdownRenderer` that combines `react-markdown` with `remark-math` and `rehype-katex`. This allows the AI to output professional-grade scientific notation that is rendered perfectly in the browser.
-
-### 🌓 Advanced Theming
-The app supports three distinct visual modes:
--   **Light Mode:** Clean and professional.
--   **Dark Mode:** High contrast for night-time study.
--   **Reading Mode (Sepia):** A specialized mode designed to reduce eye strain during long reading sessions, inspired by e-readers.
-
-### 📱 Mobile-First Architecture
-The UI is meticulously crafted for mobile devices:
--   **Fixed Viewport:** Prevents annoying page-level scrolling, keeping the header and navigation always accessible.
--   **Custom Scroll Management:** The chat and content areas use isolated scrolling to ensure a smooth, native-app experience on touch devices.
+### 📖 Comprehensive Explanations & Quizzes
+-   **Multi-Depth Explanations:** Toggle between `Basic`, `Intermediate`, and `Advanced` depth depending on your current level of understanding.
+-   **Diversified Quiz Engine:** Generates MCQ (multiple choice), FIB (fill in the blanks), and MATCH (matching pairs) using an unbiased Fisher-Yates shuffle for options.
 
 ---
 
-## 📊 Data Model (Supabase)
+## 🛠️ Technical Architecture
 
--   **`profiles`:** Stores user identity, grade, school, and avatar.
--   **`user_data`:** A centralized store for chapters, flashcards, settings, and mind maps.
--   **`chat_history`:** Persists AI tutor conversations across sessions.
--   **`friend_requests`:** Manages the social graph and peer-to-peer connections.
+### Frontend Excellence
+-   **Framework:** React 19 (Strict Mode) with TypeScript for maximum type safety.
+-   **Styling:** Tailwind CSS for utility-first design, ensuring a consistent mobile-first experience.
+-   **State Management:** Context API for global state (Auth, Theme) and local state for feature-specific logic.
+-   **Visuals:** Lucide React icons, Framer Motion for micro-interactions, and custom SVG rendering for Mind Maps.
+
+### Robust Backend & Security
+-   **Serverless API:** Vercel serverless functions handle all AI logic, keeping API keys securely on the server side.
+-   **Database:** Supabase (PostgreSQL) with **Row Level Security (RLS)** ensuring every student's data is private and secure.
+-   **Identity:** Google OAuth and Email/Password authentication via Supabase Auth.
+-   **Real-time:** Supabase real-time subscriptions for instant community and leaderboard updates.
+
+### Content Safety (The Guardrail System)
+-   **Multi-Lingual Profanity Filter:** Detects and blocks inappropriate content in English, Hindi, and Gujarati.
+-   **Identity Protection:** Peer-to-peer visibility is strictly limited to name, grade, and hobbies; emails and private data are never exposed.
 
 ---
 
-**CogniStruct** isn't just a study tool; it's a digital brain assistant that helps students learn faster, remember longer, and master their curriculum with confidence.
+## 🚀 The Student Journey
+
+1.  **Discover:** Start by typing a topic or selecting a standard NCERT subject.
+2.  **Explore:** Generate a Mind Map to see the "Big Picture" and how concepts interlink.
+3.  **Learn:** Read deep explanations or use the AI Tutor to clarify specific doubts.
+4.  **Practice:** Engage in Active Recall sessions and take AI-generated quizzes to earn points.
+5.  **Retain:** Use Flashcards for a few minutes daily to lock knowledge into long-term memory.
+6.  **Compete:** Track your progress on the global leaderboard and connect with motivated peers.
+
+---
+
+**CogniStruct** is more than a study app—it's a cognitive partner. Built by **Manthan**, it is dedicated to making the highest quality of personalized, scientifically-backed education available to every student, everywhere.

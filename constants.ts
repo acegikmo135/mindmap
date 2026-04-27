@@ -176,9 +176,26 @@ const SCIENCE_CHAPTERS: Chapter[] = [
   }
 ];
 
+// Social Science Chapters
+const SS_CHAPTERS: Chapter[] = [
+  {
+    id: 'ss-hist-01',
+    title: 'India Through the Ages',
+    subject: 'Social Science',
+    concepts: [
+      { id: 'ss-h1-c1', title: 'Ancient Civilizations', description: 'Indus Valley, Vedic period, and early kingdoms of ancient India.', estimatedMinutes: 20, status: 'NOT_STARTED', masteryLevel: 0, prerequisites: [] },
+      { id: 'ss-h1-c2', title: 'Medieval India', description: 'The Mughal Empire, Delhi Sultanate, and regional kingdoms.', estimatedMinutes: 20, status: 'LOCKED', masteryLevel: 0, prerequisites: ['ss-h1-c1'] },
+      { id: 'ss-h1-c3', title: 'Colonial Period', description: 'British East India Company, rise of colonialism, and resistance.', estimatedMinutes: 20, status: 'LOCKED', masteryLevel: 0, prerequisites: ['ss-h1-c2'] },
+      { id: 'ss-h1-c4', title: 'Freedom Movement', description: 'Non-cooperation, Civil Disobedience, and Quit India Movement.', estimatedMinutes: 25, status: 'LOCKED', masteryLevel: 0, prerequisites: ['ss-h1-c3'] },
+      { id: 'ss-h1-c5', title: 'Modern India', description: 'Independence, partition, constitution, and development after 1947.', estimatedMinutes: 20, status: 'LOCKED', masteryLevel: 0, prerequisites: ['ss-h1-c4'] },
+    ],
+  },
+];
+
 export const PREFILLED_CHAPTERS: Chapter[] = [
   ...MATHS_CHAPTERS,
-  ...SCIENCE_CHAPTERS
+  ...SCIENCE_CHAPTERS,
+  ...SS_CHAPTERS,
 ];
 
 export const MOCK_FLASHCARDS: Flashcard[] = [];

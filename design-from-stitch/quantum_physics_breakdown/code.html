@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f1f4f9",
+                        "inverse-on-surface": "#eff1f6",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "primary-fixed": "#e1e0ff",
+                        "on-primary-container": "#d9d8ff",
+                        "secondary-container": "#d5e3fc",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "primary-container": "#4b4dd8",
+                        "surface-tint": "#494bd6",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary-fixed": "#07006c",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "inverse-surface": "#2d3135",
+                        "surface": "#f7f9fe",
+                        "primary": "#3130c0",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464555",
+                        "secondary-fixed": "#d5e3fc",
+                        "surface-bright": "#f7f9fe",
+                        "surface-dim": "#d8dadf",
+                        "on-background": "#181c20",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-fixed": "#351000",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef3",
+                        "surface-variant": "#e0e2e7",
+                        "outline": "#777587",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "background": "#f7f9fe",
+                        "on-surface": "#181c20",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-secondary-container": "#57657a",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#515f74",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "inverse-primary": "#c0c1ff",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary": "#7e3000",
+                        "surface-container-high": "#e6e8ed"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "display": ["Instrument Serif", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Newsreader', serif; }
+        .font-display { font-family: 'Instrument Serif', serif; }
+        .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Mobile Top Navigation -->
+<header class="lg:hidden flex justify-between items-center px-6 w-full fixed top-0 z-50 h-16 bg-white/80 backdrop-blur-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)]">
+<span class="text-xl font-serif text-indigo-700">CogniStruct</span>
+<button class="text-slate-500 tap-highlight-transparent">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Sidebar (Desktop) -->
+<aside class="hidden md:flex flex-col h-full py-6 px-4 gap-2 w-[240px] h-screen fixed left-0 top-0 bg-slate-50 shadow-sm z-40">
+<div class="mb-6 px-2">
+<h1 class="text-2xl font-serif italic text-indigo-700 mb-1">CogniStruct</h1>
+<p class="text-[10px] font-semibold text-slate-400 tracking-widest uppercase">Chapter 1: Quantum Physics</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active: Breakdown -->
+<a class="flex items-center gap-3 px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full font-semibold transition-colors duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="text-sm">Breakdown</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-sm">Understand</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-sm">Mind Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">library_books</span>
+<span class="text-sm">Subjects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-sm">Leaderboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm">Classmates</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-slate-200 hover:text-indigo-600 rounded-full transition-colors duration-300 scale-95 duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<div class="bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-indigo-50/50">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter">Current Rank</span>
+<span class="material-symbols-outlined text-indigo-500 text-sm">stars</span>
+</div>
+<div class="text-indigo-800 font-bold text-sm">Points: 1,240 XP</div>
+<div class="w-full bg-indigo-50 h-1.5 rounded-full mt-2">
+<div class="bg-indigo-600 h-1.5 rounded-full w-2/3"></div>
+</div>
+</div>
+<button class="flex items-center gap-3 px-4 py-2 w-full text-slate-600 hover:bg-slate-200 rounded-full transition-colors duration-300">
+<span class="material-symbols-outlined">dark_mode</span>
+<span class="text-sm">Theme Switcher</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-[240px] pt-16 md:pt-0 pb-24 min-h-screen">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl px-6 py-6 md:px-12 border-b-0">
+<div class="max-w-3xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider mb-3">
+<span class="material-symbols-outlined text-sm">science</span>
+                        Advanced Physics
+                    </div>
+<h2 class="text-4xl md:text-5xl font-display text-on-background leading-none">Chapter 1: Quantum Physics</h2>
+</div>
+<div class="flex items-center gap-8">
+<!-- Progress Ring -->
+<div class="relative flex items-center justify-center w-16 h-16">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary transition-all duration-500" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="175.9" stroke-dashoffset="96.7" stroke-width="4"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-xs font-bold text-primary">45%</span>
+</div>
+</div>
+<!-- Quick Tools -->
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-secondary hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-xl">auto_awesome</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-secondary hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-xl">forum</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-secondary hover:bg-primary-fixed hover:text-on-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Concepts List -->
+<section class="max-w-3xl mx-auto px-6 md:px-0 mt-8 space-y-4">
+<!-- MASTERED Card -->
+<div class="group relative flex items-center justify-between p-6 bg-surface-container-lowest rounded-2xl border-l-4 border-emerald-500 shadow-sm transition-all duration-300 hover:shadow-md">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-on-surface">Wave-Particle Duality</h3>
+<p class="text-sm text-on-surface-variant">The fundamental concept that every particle may be described as both a particle and a wave.</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase">Mastered</span>
+<button class="hidden group-hover:flex items-center gap-2 bg-primary px-4 py-2 rounded-xl text-on-primary text-sm font-semibold transition-all shadow-lg shadow-primary/20">
+                        Review <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- IN_PROGRESS Card -->
+<div class="group relative flex items-center justify-between p-6 bg-indigo-50/50 rounded-2xl border-l-4 border-primary shadow-sm transition-all duration-300 hover:shadow-md">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">pending</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-on-surface">The Uncertainty Principle</h3>
+<p class="text-sm text-on-surface-variant">Heisenberg's assertion that position and momentum cannot be known simultaneously.</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold text-primary bg-primary-fixed px-3 py-1 rounded-full uppercase">In Progress</span>
+<button class="flex items-center gap-2 bg-primary px-4 py-2 rounded-xl text-on-primary text-sm font-semibold transition-all shadow-lg shadow-primary/20">
+                        Continue <span class="material-symbols-outlined text-sm">play_arrow</span>
+</button>
+</div>
+</div>
+<!-- NOT_STARTED Card -->
+<div class="group relative flex items-center justify-between p-6 bg-surface-container-lowest rounded-2xl border-l-4 border-slate-300 shadow-sm transition-all duration-300 hover:shadow-md">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined text-2xl">radio_button_unchecked</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-on-surface">Quantum Entanglement</h3>
+<p class="text-sm text-on-surface-variant">Correlation of quantum states between two or more particles regardless of distance.</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase">Not Started</span>
+<button class="opacity-0 group-hover:opacity-100 flex items-center gap-2 bg-primary px-4 py-2 rounded-xl text-on-primary text-sm font-semibold transition-all shadow-lg shadow-primary/20">
+                        Start Learning <span class="material-symbols-outlined text-sm">bolt</span>
+</button>
+</div>
+</div>
+<!-- LOCKED Card -->
+<div class="group relative flex items-center justify-between p-6 bg-surface-dim/20 rounded-2xl border-l-4 border-transparent opacity-60">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-on-surface">Schrödinger's Cat</h3>
+<p class="text-sm text-on-surface-variant">A thought experiment illustrating the problem of the Copenhagen interpretation.</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-200 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs">lock</span>
+                        LOCKED
+                    </div>
+</div>
+</div>
+<!-- Visual Break / Asymmetric Card -->
+<div class="relative mt-12 p-8 rounded-3xl overflow-hidden bg-indigo-900 text-white shadow-2xl">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+<div class="flex-1">
+<h4 class="text-3xl font-display mb-2">Ready for the Quantum Challenge?</h4>
+<p class="text-indigo-200 text-sm mb-6">Test your mastery of the first three concepts and unlock Schrödinger's Paradox.</p>
+<button class="bg-white text-indigo-900 px-6 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-colors">Take Mastery Quiz</button>
+</div>
+<div class="w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-indigo-700/50">
+<img alt="Quantum Visualization" class="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 transition-all duration-700" data-alt="abstract visualization of subatomic particles colliding with neon trails and cosmic background in deep blue and purple hues" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzSMj3IHoxXzG6-2Yvp4G9WWXqMtfA3V_YMSTblLkiklcF5HmblrBMqiR4xZYA0fZF_XvYy0iab0sigCEFe8_CZ3MAON49jxhJIwQvfaw7nhN5jP_6L960kVFKCxDEpRRTRkk1byawlxRR4kqOEGxkbFqCGRmtj6FdtuvLuy3kQ4gXjhgZxKmfz2RJF03lJE9On41bap9ZxdN1N8PwT9Djb3qlRypl2N5vXC5-6CW97b3AKF8VQLsdvBP4UbdoGnlsvi8LhW07ApU"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Mobile Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-xl border-t-0 flex justify-around items-center px-4 z-50">
+<button class="flex flex-col items-center text-indigo-700">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="text-[10px] font-semibold">Breakdown</span>
+</button>
+<button class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-[10px] font-medium">Understand</span>
+</button>
+<button class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-[10px] font-medium">Mind Map</span>
+</button>
+<button class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</nav>
+</body></html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniStruct | Active Recall</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-surface": "#181c20",
+                "on-secondary-fixed-variant": "#3a485b",
+                "surface-variant": "#e0e2e7",
+                "surface": "#f7f9fe",
+                "on-tertiary-container": "#ffd2be",
+                "on-background": "#181c20",
+                "primary-container": "#4b4dd8",
+                "surface-container-low": "#f1f4f9",
+                "secondary": "#515f74",
+                "surface-dim": "#d8dadf",
+                "on-primary-fixed": "#07006c",
+                "inverse-surface": "#2d3135",
+                "inverse-on-surface": "#eff1f6",
+                "surface-tint": "#494bd6",
+                "on-primary-fixed-variant": "#2f2ebe",
+                "outline": "#777587",
+                "error": "#ba1a1a",
+                "background": "#f7f9fe",
+                "on-primary": "#ffffff",
+                "tertiary-container": "#a44100",
+                "on-tertiary-fixed-variant": "#7b2f00",
+                "primary-fixed": "#e1e0ff",
+                "surface-container-highest": "#e0e2e7",
+                "on-secondary": "#ffffff",
+                "tertiary-fixed-dim": "#ffb695",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed-dim": "#b9c7df",
+                "on-secondary-container": "#57657a",
+                "on-error-container": "#93000a",
+                "on-primary-container": "#d9d8ff",
+                "error-container": "#ffdad6",
+                "primary-fixed-dim": "#c0c1ff",
+                "on-secondary-fixed": "#0d1c2e",
+                "secondary-container": "#d5e3fc",
+                "surface-container": "#eceef3",
+                "on-surface-variant": "#464555",
+                "primary": "#3130c0",
+                "outline-variant": "#c7c4d8",
+                "tertiary": "#7e3000",
+                "surface-bright": "#f7f9fe",
+                "surface-container-high": "#e6e8ed",
+                "on-tertiary-fixed": "#351000",
+                "on-tertiary": "#ffffff",
+                "secondary-fixed": "#d5e3fc",
+                "inverse-primary": "#c0c1ff",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#ffdbcc"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Instrument Serif"],
+                "body": ["Inter"],
+                "label": ["Inter"],
+                "mono": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        background: rgba(247, 249, 254, 0.8);
+        backdrop-filter: blur(20px);
+      }
+      .indigo-gradient {
+        background: linear-gradient(135deg, #3130c0 0%, #4b4dd8 100%);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c7c4d8;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 z-40 w-full flex items-center h-16 px-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm border-none">
+<div class="flex items-center justify-between w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">arrow_back</span>
+<span class="font-headline text-2xl italic font-semibold text-indigo-700">CogniStruct</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-8 items-center font-label text-sm font-semibold tracking-tight">
+<span class="text-indigo-700 font-bold border-b-2 border-indigo-700 pb-1">AI Tutor</span>
+<span class="text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer">Mind Maps</span>
+<span class="text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer">Quizzes</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden ring-2 ring-primary-container/20">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a student avatar with soft lighting in a modern home office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP4ES05B8UBdEybPE-OEoRLyF_FA479qkCOYAHuIndqJlx27iVIV_ikc1XVfQ8dexLKrK1HHPMqfFtqjpZGXJGFoLs8SPSQhaTyLz52yzf4HD8t_pOHIFPjhI1wTeIdkF-WeYRW2C_hsaMv6iLS0WgIenFe7muog_zp3ww88PrKx80QhgNY3A7C1MuE6T-plfDENNX3cqQPCzO6OrgwEXrge6gUkZNRrUxZUPwvazj0JpfyeZtx-CqADE8v_iHJ3WJHCYBmRIQpv4"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Side Navigation (Web Only) -->
+<aside class="w-60 h-screen fixed left-0 top-0 hidden lg:flex flex-col bg-slate-50 border-r border-slate-100 py-24 gap-y-2 z-30">
+<div class="flex flex-col h-full gap-y-1">
+<div class="bg-indigo-50 text-indigo-700 rounded-full mx-2 px-4 py-3 flex items-center gap-3">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-sans text-sm font-semibold tracking-tight">AI Tutor</span>
+</div>
+<div class="text-slate-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-sans text-sm font-semibold tracking-tight">Mind Maps</span>
+</div>
+<div class="text-slate-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-sans text-sm font-semibold tracking-tight">Quizzes</span>
+</div>
+<div class="text-slate-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">style</span>
+<span class="font-sans text-sm font-semibold tracking-tight">Flashcards</span>
+</div>
+<div class="text-slate-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-slate-200 transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-sans text-sm font-semibold tracking-tight">Community</span>
+</div>
+<!-- Gamification Card -->
+<div class="mt-auto mx-4 p-4 rounded-xl glass-effect border border-outline-variant/10 shadow-sm">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-secondary-container">Daily Goal: 80%</span>
+<span class="text-[10px] font-bold text-primary">60/80</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-3/4 rounded-full"></div>
+</div>
+</div>
+</div>
+</aside>
+<main class="pt-24 pb-24 lg:pl-64 px-4 min-h-screen max-w-7xl mx-auto flex flex-col items-center">
+<!-- Progress Indicator -->
+<div class="w-full max-w-2xl mb-8">
+<div class="flex justify-between items-end mb-3">
+<div class="flex flex-col">
+<span class="text-label text-[10px] font-bold uppercase tracking-widest text-secondary">Active Session</span>
+<h2 class="font-body text-sm font-semibold text-on-surface">Concept 3 of 8</h2>
+</div>
+<span class="text-label text-[10px] font-bold text-primary px-2 py-1 bg-primary-fixed rounded-full">37.5% COMPLETE</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[37.5%] rounded-full"></div>
+</div>
+</div>
+<!-- Main Recall Card -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-[1.5rem] shadow-[0_4px_16px_rgba(15,23,42,0.08)] p-8 md:p-10 flex flex-col gap-8 relative overflow-hidden">
+<!-- Abstract background element -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-fixed/30 rounded-full blur-3xl -z-0"></div>
+<div class="relative z-10 flex flex-col items-start gap-4">
+<span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-bold tracking-wider rounded-full border border-indigo-100/50">Wave-Particle Duality</span>
+<h1 class="font-headline text-[26px] leading-tight text-on-surface">What can you tell me about Wave-Particle Duality?</h1>
+</div>
+<div class="relative z-10 space-y-4">
+<label class="block text-label text-xs font-semibold text-on-surface-variant ml-1" for="recall-answer">Type your explanation below</label>
+<div class="relative group">
+<textarea class="w-full min-h-[120px] bg-surface-container-low border border-outline-variant/15 rounded-xl p-4 font-body text-[15px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-300 resize-none custom-scrollbar outline-none" id="recall-answer" placeholder="Start typing your thoughts here..."></textarea>
+<div class="absolute bottom-3 right-3 text-label text-[10px] font-bold text-slate-400">
+                        Markdown supported
+                    </div>
+</div>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row gap-4 items-center justify-between pt-2">
+<button class="w-full md:w-auto px-6 py-3 bg-surface-container-highest text-primary font-semibold rounded-xl hover:bg-surface-variant transition-all duration-300 flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined text-lg transition-transform group-hover:rotate-12">visibility</span>
+                    Show Answer
+                </button>
+<div class="flex gap-2">
+<button class="p-3 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-3 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+</div>
+<!-- Answer Feedback Section (Simulated Reveal) -->
+<div class="mt-4 pt-8 border-t border-slate-100 flex flex-col gap-6 relative z-10">
+<div class="space-y-3">
+<h3 class="text-label text-[10px] font-bold uppercase tracking-wider text-secondary">Expert Explanation</h3>
+<div class="p-5 bg-surface-container-low rounded-xl border-l-4 border-primary/40">
+<p class="font-body text-sm leading-relaxed text-on-surface">
+                            Wave-particle duality is a fundamental principle of quantum mechanics which proposes that every particle or quantum entity may be described as either a <strong class="text-primary">particle</strong> or a <strong class="text-primary">wave</strong>. It addresses the inability of classical concepts to fully describe the behavior of quantum-scale objects.
+                        </p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 px-6 py-4 bg-emerald-50 text-emerald-700 font-bold rounded-xl border border-emerald-100 hover:bg-emerald-100 transition-all group">
+<span class="material-symbols-outlined group-hover:scale-125 transition-transform">check_circle</span>
+                        I got it! ✓
+                    </button>
+<button class="flex items-center justify-center gap-3 px-6 py-4 bg-slate-100 text-slate-600 font-bold rounded-xl border border-slate-200 hover:bg-slate-200 transition-all group">
+<span class="material-symbols-outlined group-hover:rotate-12 transition-transform">history</span>
+                        I need more practice
+                    </button>
+</div>
+</div>
+</div>
+<!-- Supportive Resource Card -->
+<div class="w-full max-w-2xl mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="p-4 bg-white/50 rounded-2xl border border-slate-100 flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer group">
+<div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<div>
+<p class="text-[10px] font-bold uppercase text-slate-400">Related</p>
+<p class="text-xs font-semibold text-on-surface">View Mind Map</p>
+</div>
+</div>
+<div class="p-4 bg-white/50 rounded-2xl border border-slate-100 flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer group">
+<div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">auto_stories</span>
+</div>
+<div>
+<p class="text-[10px] font-bold uppercase text-slate-400">Reading</p>
+<p class="text-xs font-semibold text-on-surface">Chapter 4.2</p>
+</div>
+</div>
+<div class="p-4 bg-white/50 rounded-2xl border border-slate-100 flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer group">
+<div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">smart_toy</span>
+</div>
+<div>
+<p class="text-[10px] font-bold uppercase text-slate-400">Assistant</p>
+<p class="text-xs font-semibold text-on-surface">Ask AI Tutor</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center h-20 px-2 pb-safe bg-white/90 backdrop-blur-md border-t border-slate-100 z-50 rounded-t-2xl shadow-[0_-4px_16px_rgba(15,23,42,0.08)]">
+<div class="flex flex-col items-center justify-center bg-indigo-100 text-indigo-800 rounded-xl px-4 py-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Tutor</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Maps</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Quiz</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">style</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Cards</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:scale-110 transition-transform active:scale-90">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Social</span>
+</div>
+</nav>
+<!-- Floating Action Button (FAB) Suppressed per Semantic Rules for focused learning task -->
+</body></html>

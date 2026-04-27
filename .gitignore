@@ -1,7 +1,12 @@
-# Environment variables
+# Environment variables – NEVER commit these
 .env
 .env.local
 .env.*.local
+
+# Credentials files
+../../Backend.txt
+Backend.txt
+tutor_backend.py
 
 # Logs
 logs
@@ -14,6 +19,7 @@ lerna-debug.log*
 
 node_modules
 dist
+__pycache__
 dist-ssr
 *.local
 

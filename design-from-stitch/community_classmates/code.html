@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniStruct Community</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#181c20",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-variant": "#e0e2e7",
+                        "surface": "#f7f9fe",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-background": "#181c20",
+                        "primary-container": "#4b4dd8",
+                        "surface-container-low": "#f1f4f9",
+                        "secondary": "#515f74",
+                        "surface-dim": "#d8dadf",
+                        "on-primary-fixed": "#07006c",
+                        "inverse-surface": "#2d3135",
+                        "inverse-on-surface": "#eff1f6",
+                        "surface-tint": "#494bd6",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "outline": "#777587",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#a44100",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "on-secondary-container": "#57657a",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#d9d8ff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "secondary-container": "#d5e3fc",
+                        "surface-container": "#eceef3",
+                        "on-surface-variant": "#464555",
+                        "primary": "#3130c0",
+                        "outline-variant": "#c7c4d8",
+                        "tertiary": "#7e3000",
+                        "surface-bright": "#f7f9fe",
+                        "surface-container-high": "#e6e8ed",
+                        "on-tertiary-fixed": "#351000",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#d5e3fc",
+                        "inverse-primary": "#c0c1ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Instrument Serif"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .serif-display { font-family: 'Instrument Serif', serif; }
+        .glass-panel {
+            background: rgba(247, 249, 254, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm dark:shadow-none docked full-width top-0 z-40 fixed w-full">
+<div class="flex md:hidden justify-between items-center w-full px-4 h-16">
+<span class="font-serif text-2xl italic font-semibold text-indigo-700 dark:text-indigo-300">CogniStruct</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-slate-500">notifications</span>
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Student avatar" data-alt="Student avatar profile closeup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtitxrEbGw4Def6Hr-kqWecagdt5iJKAFRBwmFbY9ubQRDbaNGHWiUYRrMMWuxIUAaW2rCVATC_1Yy_R2BnK5g9xveRtfujtjlJVLALCH5FF3La9YRGfMyJGTRPZ9H-wBY311FvaIKFUDsO2NNzbZ9oOixDccDyN2juYEZnAhNlPfk20zv86SgogeEGWm4PiFndsAwwTLWEmku2zXFdwlcbRKJz6b1JV0hEJYCm4wnvRf8LxzdR5FSt7qQvBLGvoBGs_10BQ2sqIQ"/>
+</div>
+</div>
+</div>
+<!-- Desktop Header Content -->
+<div class="hidden md:flex justify-between items-center h-16 px-8 max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-serif text-2xl italic font-semibold text-indigo-700 dark:text-indigo-300">CogniStruct</span>
+<nav class="flex gap-6">
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-700" href="#">Curriculum</a>
+<a class="text-indigo-700 dark:text-indigo-300 font-bold" href="#">Community</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-indigo-700" href="#">Resources</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search knowledge..." type="text"/>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-slate-500 hover:bg-indigo-50 p-2 rounded-full transition-colors cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-slate-500 hover:bg-indigo-50 p-2 rounded-full transition-colors cursor-pointer">settings</span>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="w-60 h-screen fixed left-0 top-0 hidden md:flex flex-col bg-slate-50 dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 z-50">
+<div class="flex flex-col h-full py-8 gap-y-2">
+<div class="px-6 mb-8">
+<div class="font-serif text-xl italic font-bold text-indigo-900 dark:text-indigo-100">CogniStruct</div>
+<div class="text-[10px] font-bold tracking-widest text-secondary uppercase opacity-70">Academic Luminary</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 font-sans text-sm font-semibold tracking-tight hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer rounded-full">
+<span class="material-symbols-outlined">psychology</span> AI Tutor
+                </div>
+<div class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 font-sans text-sm font-semibold tracking-tight hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer rounded-full">
+<span class="material-symbols-outlined">hub</span> Mind Maps
+                </div>
+<div class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 font-sans text-sm font-semibold tracking-tight hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer rounded-full">
+<span class="material-symbols-outlined">quiz</span> Quizzes
+                </div>
+<div class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-3 flex items-center gap-3 font-sans text-sm font-semibold tracking-tight hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer rounded-full">
+<span class="material-symbols-outlined">style</span> Flashcards
+                </div>
+<div class="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full mx-2 px-4 py-3 flex items-center gap-3 font-sans text-sm font-semibold tracking-tight">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span> Community
+                </div>
+</nav>
+<div class="px-4 mt-auto">
+<div class="glass-panel p-4 rounded-xl border border-outline-variant/10 shadow-sm">
+<div class="text-[10px] uppercase tracking-wider font-bold text-indigo-600 mb-1">Daily Goal</div>
+<div class="flex items-center justify-between">
+<span class="font-bold text-lg">80%</span>
+<div class="w-12 h-1.5 bg-indigo-100 rounded-full overflow-hidden">
+<div class="bg-indigo-600 h-full w-[80%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-2 flex items-center gap-3 font-sans text-xs font-semibold hover:bg-slate-200 cursor-pointer rounded-full">
+<span class="material-symbols-outlined text-sm">auto_stories</span> Reading Mode
+                </div>
+<div class="text-slate-600 dark:text-slate-400 mx-2 px-4 py-2 flex items-center gap-3 font-sans text-xs font-semibold hover:bg-slate-200 cursor-pointer rounded-full">
+<span class="material-symbols-outlined text-sm">help</span> Help
+                </div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-60 pt-20 pb-24 px-6 md:px-12 min-h-screen">
+<!-- Toast Notification -->
+<div class="fixed top-20 right-6 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+<div class="bg-on-surface text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+<span class="text-sm font-medium">Request sent to Julian Thorne</span>
+</div>
+</div>
+<header class="mb-12">
+<h1 class="serif-display text-5xl mb-2 text-on-surface">Community</h1>
+<p class="text-secondary font-medium italic">Discover and connect with fellow luminaries in your field.</p>
+</header>
+<!-- Tab Bar & Search -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+<div class="flex p-1 bg-surface-container-low rounded-xl w-fit">
+<button class="px-6 py-2 rounded-lg text-sm font-bold bg-white shadow-sm text-primary">Explore</button>
+<button class="px-6 py-2 rounded-lg text-sm font-bold text-secondary hover:text-on-surface transition-colors">Requests (3)</button>
+<button class="px-6 py-2 rounded-lg text-sm font-bold text-secondary hover:text-on-surface transition-colors">Friends (12)</button>
+</div>
+<div class="relative max-w-md w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border-none rounded-[12px] shadow-sm text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-outline/60" placeholder="Search by name, grade, or hobby..." type="text"/>
+</div>
+</div>
+<!-- Student Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Card 1 (Active/Sent State) -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative">
+<img alt="Julian Thorne" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10" data-alt="Portrait of a young male student with glasses and a thoughtful expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCq4CDfaEYEiMXW1fokErMbty4IjJC0ovN3Hh6L4JT9DBueXnigKor4EeCJFnoc_M-euUdf-ySKi17njabTfYHUfxW4Q7sQMIB9RrTFCSt0thXUeaif2kjjMRnxb846VztnFn_SY0b1YrMHny9eoXq6eV7NkGRsK7Hv1R0NrjOXfxjzqH1cVWCvnDrzPcMVUQExbnF_c-TBwEx8HFVerTQonfzrMsjgi32-YqN9MmBDRAaLdu_mv5M3apGqAuIvNDPwXobppdc87PU"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+</div>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Master's</span>
+</div>
+<h3 class="font-bold text-lg text-on-surface mb-1">Julian Thorne</h3>
+<p class="text-xs text-secondary mb-4 italic">Modern Architecture, Jazz Theory</p>
+<button class="w-full py-2.5 rounded-lg border-2 border-outline-variant text-outline font-bold text-sm flex items-center justify-center gap-2 cursor-default">
+<span class="material-symbols-outlined text-sm">schedule</span> Request Sent
+                </button>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative">
+<img alt="Amara Chen" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10" data-alt="Portrait of a female student with curly hair smiling warmly at the camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBF8HQgNOzPDQkYEhdni6aXjvQPUw7r5PYu-c70vhwxyVNeNJGLSNZhHjQlaVsptQGkEAG2uwkTJbL7Q7GFL8B2kn_CO1JLot_wrcJq-zXvcdrzUVC6hEYHFVhs1DvGjHgzkdWF20rqcA3VXiWWPeZ77dA3HUIvRkvzyxmMcvbltP1AjpNgkgR79FONiGqwdTxnBWfo1OhYo4-MmeSFqmgeBEiMZ84UJBrij7U-0UXAI4ZEr4xUAoRIzX3FwHguCYJSDDJTErUZLxI"/>
+</div>
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Doctorate</span>
+</div>
+<h3 class="font-bold text-lg text-on-surface mb-1">Amara Chen</h3>
+<p class="text-xs text-secondary mb-4 italic">AI Ethics, Computational Linguistics</p>
+<button class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                    Send Request
+                </button>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative">
+<img alt="Leo Vance" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10" data-alt="Close up portrait of a male student with short dark hair in a casual white t-shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-lC0rhjbTWCJLMAnA7Lcz4kDzYXZLECFP4UQ_Qe4KbUxlz4YUZdizhQm5UDCrfN6vY9vT3hmDSb4gQDsKvCcdhP_gLL-oGRYQt7ip_IflF8x8m71U5yepUiQjm6TPeX_Y1ntDYYxQzEbeI9U_Sn2xEnMiB0D4xLhZRFXVC9Sg0cpybKTnzP0rsz7b-U-lXyVoJQDT3n-y8xi58yEiBkbM6-hvuOKPXEbQcK8pzYqaDYs0Obh87Qr-Vt5FUa8bsS5v_SWcCLGLj2Q"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Senior</span>
+</div>
+<h3 class="font-bold text-lg text-on-surface mb-1">Leo Vance</h3>
+<p class="text-xs text-secondary mb-4 italic">Abstract Algebra, Micro-botany</p>
+<button class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                    Send Request
+                </button>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative">
+<img alt="Sofia Rossi" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10" data-alt="Portrait of a female student with a focused and intelligent expression looking slightly off-camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjNroqnL9xLow7f5ss7uK_sirQ6vAPKOEFMPvWhusyWi-7pYBDssGj--GvL7IaS97HoyPyF9K6s7-j6gjYgOkIvqNlyWvrPsPT4stupygDPeOSby-hBDjW3UTdEndE7ly4aF6ihYcC20soLy_fOZYhu0VlNOA5MPGv1JenC1wY98EqqrLN2bCWj_4VTQmfHG7StCDVDzf_3WzWW1avQdIJB-l48GOLvf6nkydcZpexWUAsS2K3Vqg7qzhPfOoRjiDuIIcuySQ7ERE"/>
+</div>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Junior</span>
+</div>
+<h3 class="font-bold text-lg text-on-surface mb-1">Sofia Rossi</h3>
+<p class="text-xs text-secondary mb-4 italic">Renaissance Art, Cryptography</p>
+<button class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                    Send Request
+                </button>
+</div>
+<!-- Card 5 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative">
+<img alt="Marcus Gray" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10" data-alt="Young male student with a cheerful smile and warm backlighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWffNaeojFUgY5ajPph2DisVwOi_c2yHTgA7zCLq5UcCyi_KsOHPfqAp_NXwf5zerGQhvME-fEyR4PvmX9IN0ErcIkWfkeKLP0I7XzEScpm2TEbGP17sLq2AqIRhfs-L8ttyG_CcXVjSEX0Y5F87U7DE6S07yA1UwXbhkgiv6Ykb2mwRe_varDPcDyP7n3D9QjuUMLEt6qOkx6fPhh2zBd3LsLusnf1knf0-U8g5MZy2IBkvsc6rdGkATkH-EBEFO_DISyXKboWiM"/>
+</div>
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Sophomore</span>
+</div>
+<h3 class="font-bold text-lg text-on-surface mb-1">Marcus Gray</h3>
+<p class="text-xs text-secondary mb-4 italic">Game Design, Urban Exploration</p>
+<button class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                    Send Request
+                </button>
+</div>
+<!-- Card 6 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative">
+<img alt="Elena Park" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10" data-alt="Female student with a minimalist aesthetic and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASITKs3hPj283r6qfeo6xo2ckmIEvyF0NN9GzU1P8ez4lOhvaI06THva1xsHGNOGPe6U-I111atxkqumjOFURPavBhpM4VZzR-E2CN4ukxNZbDfhzTBOllVeLvsT0nrWuk6ZyR0SQWfZDThAe3QCVWnlQRgHEUuxWxXXoDjvcjyVYpUmml6eysrA2tVfjNg14K-tYivUPPN03z0qMsU29q1vi_et6Piskr3KYzoJiUWPnEnwchJPes30ftTEN51xqETM0iR3wPEKE"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Doctorate</span>
+</div>
+<h3 class="font-bold text-lg text-on-surface mb-1">Elena Park</h3>
+<p class="text-xs text-secondary mb-4 italic">Neuroscience, Photography</p>
+<button class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                    Send Request
+                </button>
+</div>
+<!-- Empty State Placeholder / Card 7 -->
+<div class="bg-surface-container-low border-2 border-dashed border-outline-variant p-6 rounded-xl flex flex-col items-center justify-center text-center opacity-70 group hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-secondary">person_add</span>
+</div>
+<h3 class="font-bold text-sm text-secondary">Invite classmate</h3>
+<p class="text-[10px] text-secondary mt-1">Grow your academic circle</p>
+</div>
+</div>
+<!-- Featured Section (Asymmetric) -->
+<section class="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 relative h-64 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent z-10"></div>
+<img alt="Study Group" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A diverse group of students collaborating around a wooden table in a bright modern library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbUmSbUzOY1OQJMkRK8owiIGKF0DaK50TsVdr6U4c9SORWeVS4tn8ukxvHbPhR1kBt7ieUNUf-d5mQeJrHAZ0uCQYBV3vwQuxerFZ11ygHgmeb3NdWy3v00ix7Hx7TU3mc1Tb9LXO2CiFWTlSE3axUvdq_LcSi7AWsrcbbm98b5tPTneHoztpnaebpY1z24jlo2er9Ch9C_5IXhbe4c3fnAJQjF2DGJje2bX_k3t5lkcKQNzSgcVmD7i5KGv7-crKZuDVNm5rVpMI"/>
+<div class="absolute inset-0 z-20 p-10 flex flex-col justify-center max-w-md">
+<span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest w-fit px-3 py-1 rounded-full mb-4">Event Highlight</span>
+<h2 class="serif-display text-3xl text-white mb-2">Weekend Deep-Work Sprints</h2>
+<p class="text-white/80 text-sm mb-6">Join 42 others in the Physics Mind Map session this Saturday.</p>
+<button class="bg-white text-primary px-6 py-2.5 rounded-lg font-bold text-sm w-fit shadow-lg shadow-primary/20 active:scale-95 transition-all">Explore Sprints</button>
+</div>
+</div>
+<div class="bg-indigo-900 text-white p-8 rounded-2xl flex flex-col justify-between">
+<div>
+<h3 class="font-bold text-xl mb-4">Recommended for You</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-indigo-200">lightbulb</span>
+</div>
+<div>
+<div class="text-sm font-bold">Quantum Ethics</div>
+<div class="text-[10px] opacity-60">8 Classmates in common</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-indigo-200">diversity_2</span>
+</div>
+<div>
+<div class="text-sm font-bold">The Archive Club</div>
+<div class="text-[10px] opacity-60">Curated by Academic Luminaries</div>
+</div>
+</div>
+</div>
+</div>
+<button class="text-sm font-bold flex items-center gap-2 group">
+                    See all suggestions <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center h-20 px-2 pb-safe bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] z-50 rounded-t-2xl">
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Tutor</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Maps</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">quiz</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Quiz</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined">style</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Cards</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 rounded-xl px-3 py-1 hover:scale-110 transition-transform active:scale-90 duration-200 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-sans text-[10px] font-bold uppercase tracking-wider">Social</span>
+</div>
+</nav>
+<!-- FAB (Suppressed as per rules for Community screen context) -->
+</body></html>
