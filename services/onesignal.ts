@@ -52,20 +52,33 @@ export const initOneSignal = (): void => {
     } catch (err: any) {
       const msg: string = err?.message ?? '';
       if (msg.includes('AppID') || msg.includes('match') || msg.includes('existing')) {
-        // Only attempt cleanup once per session — prevents infinite reload loop
         if (!sessionStorage.getItem('os_cleaned')) {
-          console.warn('[OneSignal] Stale app detected — unregistering service workers and reloading once…');
+          console.warn('[OneSignal] Stale app — cleaning and reloading once…');
           sessionStorage.setItem('os_cleaned', '1');
           try {
-            // Only unregister service workers, don't touch IndexedDB (would break Supabase auth)
+            // 1. Unregister all service workers
             const regs = await navigator.serviceWorker.getRegistrations();
             await Promise.all(regs.map(r => r.unregister()));
+            // 2. Delete ONLY OneSignal IndexedDB (leave Supabase untouched)
+            if ('databases' in indexedDB) {
+              const dbs = await indexedDB.databases();
+              for (const db of dbs) {
+                const n = (db.name ?? '').toLowerCase();
+                if (n.includes('onesignal') || n.includes('one_signal') || n.includes('signal_sdk')) {
+                  indexedDB.deleteDatabase(db.name!);
+                }
+              }
+            }
+            // 3. Clear OneSignal localStorage entries only
+            Object.keys(localStorage)
+              .filter(k => k.toLowerCase().includes('onesignal') || k.startsWith('os_'))
+              .forEach(k => localStorage.removeItem(k));
           } catch { /* ignore */ }
           window.location.reload();
           return;
         }
-        // Second attempt still fails — give up silently, don't loop
-        console.warn('[OneSignal] App ID mismatch persists — push notifications disabled');
+        // Already cleaned — init still fails. Disable silently, don't loop.
+        console.warn('[OneSignal] Push notifications unavailable on this browser.');
         return;
       }
       console.error('[OneSignal] init failed:', err);
