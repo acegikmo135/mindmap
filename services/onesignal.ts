@@ -28,6 +28,17 @@ export const initOneSignal = (): void => {
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   window.OneSignalDeferred.push(async (OneSignal: any) => {
     try {
+      // Delete stale OneSignal IndexedDB data before init to prevent
+      // "AppID doesn't match" errors from previous sessions/domains
+      if ('databases' in indexedDB) {
+        const dbs = await indexedDB.databases();
+        for (const db of dbs) {
+          if (db.name?.toLowerCase().includes('onesignal')) {
+            indexedDB.deleteDatabase(db.name);
+          }
+        }
+      }
+
       await OneSignal.init({
         appId:                        APP_ID,
         allowLocalhostAsSecureOrigin: true,
