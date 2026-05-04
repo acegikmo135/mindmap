@@ -13,22 +13,6 @@ let _rejectOS!:  (err: any) => void;
 const _osReady = new Promise<any>((res, rej) => { _resolveOS = res; _rejectOS = rej; });
 const getOS = () => _osReady;
 
-// Wipe all service workers + all IndexedDB, then reload.
-// Called when OneSignal detects a stale/mismatched app ID.
-async function _nukeAndReload(): Promise<void> {
-  try {
-    const regs = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(regs.map(r => r.unregister()));
-    if ('databases' in indexedDB) {
-      const dbs = await indexedDB.databases();
-      for (const db of dbs) {
-        if (db.name) indexedDB.deleteDatabase(db.name);
-      }
-    }
-  } catch { /* ignore */ }
-  window.location.reload();
-}
-
 export const initOneSignal = (): void => {
   if (window.__osInitialized__) {
     if (window.OneSignal) _resolveOS(window.OneSignal);
@@ -67,11 +51,21 @@ export const initOneSignal = (): void => {
       _resolveOS(OneSignal);
     } catch (err: any) {
       const msg: string = err?.message ?? '';
-      // Stale service worker from a previous OneSignal app on this domain.
-      // Nuke everything and reload — init will succeed on the clean page.
       if (msg.includes('AppID') || msg.includes('match') || msg.includes('existing')) {
-        console.warn('[OneSignal] Stale app — clearing service workers and reloading…');
-        await _nukeAndReload();
+        // Only attempt cleanup once per session — prevents infinite reload loop
+        if (!sessionStorage.getItem('os_cleaned')) {
+          console.warn('[OneSignal] Stale app detected — unregistering service workers and reloading once…');
+          sessionStorage.setItem('os_cleaned', '1');
+          try {
+            // Only unregister service workers, don't touch IndexedDB (would break Supabase auth)
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+          } catch { /* ignore */ }
+          window.location.reload();
+          return;
+        }
+        // Second attempt still fails — give up silently, don't loop
+        console.warn('[OneSignal] App ID mismatch persists — push notifications disabled');
         return;
       }
       console.error('[OneSignal] init failed:', err);
@@ -98,22 +92,15 @@ export const requestOneSignalPermission = async (): Promise<boolean> => {
   try {
     const os = await getOS();
     if (os.User.PushSubscription.optedIn) return true;
-
     os.Slidedown.promptPush({ force: true });
-
     for (let i = 0; i < 30; i++) {
       await new Promise(r => setTimeout(r, 1000));
-      if (os.User.PushSubscription.optedIn) {
-        console.log('[OneSignal] ✅ optedIn after', i + 1, 's');
-        return true;
-      }
+      if (os.User.PushSubscription.optedIn) return true;
       if (Notification.permission === 'denied') return false;
     }
-
     if (Notification.permission === 'granted') {
       await os.User.PushSubscription.optIn();
     }
-
     return os.User.PushSubscription.optedIn === true;
   } catch (err) {
     console.error('[OneSignal] subscribe failed:', err);
