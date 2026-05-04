@@ -59,25 +59,25 @@ export const initOneSignal = (): void => {
             // 1. Unregister all service workers
             const regs = await navigator.serviceWorker.getRegistrations();
             await Promise.all(regs.map(r => r.unregister()));
-            // 2. Delete ONLY OneSignal IndexedDB (leave Supabase untouched)
+            // 2. Delete every IndexedDB EXCEPT Supabase (which stores auth session)
             if ('databases' in indexedDB) {
               const dbs = await indexedDB.databases();
+              console.log('[OneSignal] Deleting IndexedDB:', dbs.map(d => d.name));
               for (const db of dbs) {
                 const n = (db.name ?? '').toLowerCase();
-                if (n.includes('onesignal') || n.includes('one_signal') || n.includes('signal_sdk')) {
+                if (!n.includes('supabase')) {
                   indexedDB.deleteDatabase(db.name!);
                 }
               }
             }
-            // 3. Clear OneSignal localStorage entries only
-            Object.keys(localStorage)
-              .filter(k => k.toLowerCase().includes('onesignal') || k.startsWith('os_'))
-              .forEach(k => localStorage.removeItem(k));
+            // 3. Clear all localStorage EXCEPT Supabase auth token
+            for (const k of Object.keys(localStorage)) {
+              if (!k.toLowerCase().includes('supabase')) localStorage.removeItem(k);
+            }
           } catch { /* ignore */ }
           window.location.reload();
           return;
         }
-        // Already cleaned — init still fails. Disable silently, don't loop.
         console.warn('[OneSignal] Push notifications unavailable on this browser.');
         return;
       }
