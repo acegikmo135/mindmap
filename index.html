@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CogniStruct – Academic Luminary</title>
 
+    <!-- OneSignal Web Push SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
     <!-- Tailwind CDN with plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -154,20 +157,25 @@
       }
 
       /* ── Reset & base ─────────────────────────────────────────── */
-      html, body {
-        height: 100% !important;
-        width: 100% !important;
+      html {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        height: 100%;
         margin: 0 !important;
         padding: 0 !important;
         overflow: hidden !important;
-        position: fixed !important;
-        top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
         overscroll-behavior: none !important;
+      }
+      body {
         font-family: 'Inter', sans-serif;
         color: #181c20;
         background-color: #f7f9fe;
         transition: background-color 0.3s, color 0.3s;
       }
+      /* overflow:hidden on #root must NOT be applied — it would clip third-party
+         fixed widgets like the OneSignal bell that are appended to <body> */
       #root { height: 100%; }
 
       /* ── Material Symbols ─────────────────────────────────────── */

@@ -8,8 +8,7 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
+// StrictMode removed — OneSignal docs explicitly state it causes double init and duplicate subscriptions
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <App />
 );

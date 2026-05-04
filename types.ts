@@ -13,7 +13,8 @@ export enum AppMode {
   PROFILE = 'PROFILE',
   COMMUNITY = 'COMMUNITY',
   CONTACT = 'CONTACT',
-  TIMELINE = 'TIMELINE'
+  TIMELINE = 'TIMELINE',
+  INDIA_MAP = 'INDIA_MAP'
 }
 
 export type QuizType = 'MCQ' | 'FIB' | 'MATCH' | 'MIXED';

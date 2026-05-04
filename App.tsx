@@ -18,12 +18,13 @@ const Quiz             = lazy(() => import('./components/Quiz'));
 const Leaderboard      = lazy(() => import('./components/Leaderboard'));
 const ContactSupport   = lazy(() => import('./components/ContactSupport'));
 const Timeline         = lazy(() => import('./components/Timeline'));
+const IndiaMap         = lazy(() => import('./components/IndiaMap'));
 
 import { AppMode, Theme, Chapter, Flashcard, UserProfile, FeatureFlags, RateLimits } from './types';
 import { PREFILLED_CHAPTERS } from './constants';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { getUserData, saveUserData, getUserProfile, updateUserProfile, adminGetSettings, checkAndLogFeatureCall } from './services/db';
-import { initOneSignal, setOneSignalExternalId } from './services/notifications';
+import { initOneSignal, loginOneSignal, logoutOneSignal, requestOneSignalPermission, autoPromptIfNeeded, onSubscriptionChange, isNotificationGranted } from './services/onesignal';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 import { AlertTriangle } from 'lucide-react';
 
@@ -83,11 +84,29 @@ const AuthenticatedApp: React.FC = () => {
     chatbot_daily_tokens: 5000, mindmap_calls_per_hour: 5,
     quiz_calls_per_hour: 10, flashcard_calls_per_hour: 10, explanation_calls_per_hour: 5,
   });
+  const [notifGranted, setNotifGranted] = useState(isNotificationGranted);
+
+  // Init SDK on mount — no permission needed
+  useEffect(() => {
+    initOneSignal();
+    // Keep bell state in sync with actual OneSignal subscription
+    onSubscriptionChange(setNotifGranted);
+  }, []);
+
+  // Login then auto-prompt if needed — login must happen before subscribe
+  // so the subscription is created WITH the external_id from the start.
+  useEffect(() => {
+    if (!user) return;
+    loginOneSignal(user.id).then(() => autoPromptIfNeeded());
+  }, [user?.id]);
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestOneSignalPermission();
+    if (granted) setNotifGranted(true);  // direct update, don't wait for SDK event
+  };
 
   useEffect(() => {
     if (!user) return;
-    initOneSignal();
-    setOneSignalExternalId(user.id);
     const loadData = async () => {
       setIsLoadingData(true);
       const [data, userProfile, adminSettings] = await Promise.all([
@@ -355,7 +374,7 @@ const AuthenticatedApp: React.FC = () => {
         const chapterCards = flashcards.filter(f => f.chapterId === activeChapter.id);
         return (
           <RateLimitGate feature="flashcards" limit={rateLimits.flashcard_calls_per_hour} name="Flashcards" enabled>
-            <Flashcards cards={chapterCards} chapter={activeChapter} onAddCard={handleAddFlashcard} />
+            <Flashcards cards={chapterCards} chapter={activeChapter} onAddCard={handleAddFlashcard} userId={user?.id} />
           </RateLimitGate>
         );
       }
@@ -370,7 +389,7 @@ const AuthenticatedApp: React.FC = () => {
             }} />
         );
       case AppMode.REVISION:
-        return featureFlags.revision ? <RevisionMode chapter={activeChapter} /> : <FeatureDisabled name="Revision Mode" />;
+        return featureFlags.revision ? <RevisionMode chapter={activeChapter} userId={user?.id} /> : <FeatureDisabled name="Revision Mode" />;
       case AppMode.QUIZ:
         if (!featureFlags.quiz) return <FeatureDisabled name="Quiz" />;
         return (
@@ -381,6 +400,10 @@ const AuthenticatedApp: React.FC = () => {
       case AppMode.TIMELINE:
         return activeChapter.subject === 'Social Science'
           ? <Timeline chapter={activeChapter} />
+          : <ChapterBreakdown chapter={activeChapter} onStartLearning={handleStartLearning} />;
+      case AppMode.INDIA_MAP:
+        return activeChapter.subject === 'Social Science'
+          ? <IndiaMap chapter={activeChapter} />
           : <ChapterBreakdown chapter={activeChapter} onStartLearning={handleStartLearning} />;
       case AppMode.ADMIN:
         if (!profile?.is_admin) return <ChapterBreakdown chapter={activeChapter} onStartLearning={handleStartLearning} />;
@@ -420,6 +443,7 @@ const AuthenticatedApp: React.FC = () => {
         />
       )}
 
+
       <Sidebar
         currentMode={currentMode}
         setMode={handleModeChange}
@@ -430,9 +454,11 @@ const AuthenticatedApp: React.FC = () => {
         activeChapterSubject={activeChapter?.subject}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
-        onSignOut={signOut}
+        onSignOut={() => { logoutOneSignal(); signOut(); }}
         totalPoints={profile?.total_points ?? 0}
         isAdmin={profile?.is_admin === true}
+        notifGranted={notifGranted}
+        onEnableNotifications={handleEnableNotifications}
       />
 
       {/* Main content */}
@@ -446,7 +472,7 @@ const AuthenticatedApp: React.FC = () => {
 
           {currentMode === AppMode.DOUBT_SOLVER ? (
             <>
-              {/* DoubtSolver mode: show chapter info + progress + clear */}
+              {/* DoubtSolver mode: show chapter info + progress + new chat */}
               <div className="flex-1 min-w-0">
                 <p className="font-serif text-sm font-semibold text-on-surface leading-tight truncate">AI Tutor</p>
                 <p className="text-[10px] text-secondary truncate">{activeChapter?.subject} · {activeChapter?.title}</p>
@@ -454,9 +480,9 @@ const AuthenticatedApp: React.FC = () => {
               <div className="flex items-center gap-1.5 shrink-0">
                 <CircularProgressMini used={dsTokenUsed} limit={dsTokenLimit} />
                 <button onClick={() => dsClearFn?.()}
-                  title="Clear chat"
+                  title="New chat"
                   className="p-1.5 text-secondary hover:bg-surface-container-high rounded-full transition-colors">
-                  <span className="material-symbols-outlined text-[20px]">delete_sweep</span>
+                  <span className="material-symbols-outlined text-[20px]">add_comment</span>
                 </button>
               </div>
             </>
@@ -642,15 +668,16 @@ const AppContent: React.FC = () => {
   // must stay visible until the user explicitly dismisses it.
   useEffect(() => {
     if (!user) return;
-    const check = () =>
-      supabase.from('profiles').select('is_banned, ban_reason').eq('id', user.id).maybeSingle()
-        .then(({ data }) => {
-          if (data?.is_banned) {
-            setIsBanned(true);
-            setBanReason(data.ban_reason || '');
-            supabase.auth.signOut(); // sign out immediately
-          }
-        }).catch(() => {});
+    const check = async () => {
+      try {
+        const { data } = await supabase.from('profiles').select('is_banned, ban_reason').eq('id', user.id).maybeSingle();
+        if (data?.is_banned) {
+          setIsBanned(true);
+          setBanReason(data.ban_reason || '');
+          supabase.auth.signOut();
+        }
+      } catch { /* ignore */ }
+    };
     check();
     const interval = setInterval(check, 30_000);
     return () => clearInterval(interval);

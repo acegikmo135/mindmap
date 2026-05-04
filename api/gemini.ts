@@ -377,33 +377,40 @@ Instructions:
       }
 
       // ── Send Push Notification (OneSignal) ───────────────────────────────
-      // C-2: The caller is now authenticated (JWT verified above).
-      // targetUserId is validated as a UUID to prevent injection.
       case "send-notification": {
         const targetUserId = sanitize(body.targetUserId, 100);
         const title        = sanitize(body.title, 100);
         const message      = sanitize(body.message, 300);
 
-        // Validate targetUserId is a proper UUID before forwarding to OneSignal.
         if (!targetUserId || !isValidUUID(targetUserId)) {
           return res.status(400).json({ error: "Invalid targetUserId." });
         }
 
-        const appId   = process.env.VITE_ONESIGNAL_APP_ID ?? '';
-        const restKey = process.env.ONESIGNAL_REST_API_KEY ?? '';
-        if (!appId || !restKey) { res.status(200).json({ text: 'skipped' }); return; }
+        const apiKey = process.env.ONESIGNAL_API_KEY ?? '';
+        const appId  = process.env.VITE_ONESIGNAL_APP_ID ?? '';
 
-        const notifRes = await fetch('https://onesignal.com/api/v1/notifications', {
+        if (!apiKey || !appId) {
+          console.log('[OneSignal] ONESIGNAL_API_KEY / VITE_ONESIGNAL_APP_ID not set — skipping');
+          res.status(200).json({ text: 'skipped' }); return;
+        }
+
+        const osRes = await fetch('https://api.onesignal.com/notifications', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${restKey}` },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Key ${apiKey}`,
+          },
           body: JSON.stringify({
             app_id: appId,
-            include_external_user_ids: [targetUserId],
+            target_channel: 'push',
+            include_aliases: { external_id: [targetUserId] },
             headings: { en: title },
             contents: { en: message },
           }),
         });
-        resultText = JSON.stringify(await notifRes.json());
+        const osData = await osRes.json();
+        console.log('[OneSignal] HTTP', osRes.status, JSON.stringify(osData));
+        resultText = JSON.stringify(osData);
         break;
       }
 

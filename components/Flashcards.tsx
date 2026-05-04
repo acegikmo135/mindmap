@@ -3,14 +3,16 @@ import { Flashcard, Chapter } from '../types';
 import { Loader2 } from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
 import { getFlashcardsFromCache } from '../services/db';
+import { scheduleFlashcardReminder } from '../services/notifications';
 
 interface FlashcardsProps {
   cards: Flashcard[];
   chapter: Chapter;
   onAddCard?: (front: string, back: string) => void;
+  userId?: string;
 }
 
-const Flashcards: React.FC<FlashcardsProps> = ({ cards, chapter, onAddCard }) => {
+const Flashcards: React.FC<FlashcardsProps> = ({ cards, chapter, onAddCard, userId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -233,12 +235,17 @@ const Flashcards: React.FC<FlashcardsProps> = ({ cards, chapter, onAddCard }) =>
       {/* Rating buttons */}
       <div className={`mt-10 flex flex-wrap justify-center gap-3 transition-all duration-300 ${isFlipped ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-4'}`}>
         {[
-          { label: 'Again', interval: '<1m',  hover: 'hover:bg-error-container/30 hover:text-error' },
-          { label: 'Hard',  interval: '2d',   hover: 'hover:bg-orange-50 hover:text-tertiary' },
-          { label: 'Good',  interval: '4d',   hover: 'hover:bg-indigo-50 hover:text-primary' },
-          { label: 'Easy',  interval: '7d',   hover: 'hover:bg-emerald-50 hover:text-emerald-700' },
-        ].map(({ label, interval, hover }) => (
-          <button key={label} onClick={handleNext}
+          { label: 'Again', interval: '<1m', hover: 'hover:bg-error-container/30 hover:text-error',     delayDays: 0 },
+          { label: 'Hard',  interval: '2d',  hover: 'hover:bg-orange-50 hover:text-tertiary',           delayDays: 2 },
+          { label: 'Good',  interval: '4d',  hover: 'hover:bg-indigo-50 hover:text-primary',            delayDays: 4 },
+          { label: 'Easy',  interval: '7d',  hover: 'hover:bg-emerald-50 hover:text-emerald-700',       delayDays: 7 },
+        ].map(({ label, interval, hover, delayDays }) => (
+          <button key={label} onClick={() => {
+            if (userId && delayDays > 0) {
+              scheduleFlashcardReminder(userId, chapter.title, delayDays);
+            }
+            handleNext();
+          }}
             className={`flex-1 min-w-[80px] py-4 px-2 bg-surface-container-lowest rounded-full group transition-all ${hover}`}
             style={{ border: '1px solid rgba(199,196,216,0.2)', boxShadow: '0 2px 8px rgba(15,23,42,0.06)' }}>
             <div className="flex flex-col items-center">

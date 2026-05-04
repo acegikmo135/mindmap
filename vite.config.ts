@@ -26,7 +26,7 @@ function send(res: any, status: number, body: object) {
 // ── Vite plugin: mirrors api/gemini.ts but runs inside the Vite dev server ───
 // Accepts supabaseUrl + supabaseKey to verify JWTs against Supabase (mirrors
 // the production auth check in api/gemini.ts).
-function geminiDevPlugin(apiKey: string, supabaseUrl: string, supabaseKey: string, onesignalAppId: string, onesignalRestKey: string) {
+function geminiDevPlugin(apiKey: string, supabaseUrl: string, supabaseKey: string, oneSignalAppId: string, oneSignalApiKey: string) {
   const LATEX = "Use LaTeX for ALL math expressions, enclosed in single dollar signs (e.g. $x^2$). Use **bold** for key terms.";
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -229,24 +229,36 @@ Instructions: simple language, bullet points, real-world analogies. ${LATEX}`,
               break;
             }
 
-            // ── Send Push Notification (OneSignal) ────────────────────────
+            // ── Send Push Notification (OneSignal) ───────────────────────
             case 'send-notification': {
               const targetUserId = sanitize(body.targetUserId, 100);
               const title        = sanitize(body.title, 100);
               const message      = sanitize(body.message, 300);
-              if (!targetUserId || !UUID_RE.test(targetUserId)) { send(res, 400, { error: 'Invalid targetUserId.' }); return; }
-              if (!onesignalAppId || !onesignalRestKey) { send(res, 200, { text: 'skipped' }); return; }
-              const r = await fetch('https://onesignal.com/api/v1/notifications', {
+              console.log(`\n[OneSignal] send-notification → targetUserId: ${targetUserId}, title: ${title}`);
+              if (!targetUserId || !UUID_RE.test(targetUserId)) {
+                send(res, 400, { error: 'Invalid targetUserId.' }); return;
+              }
+              if (!oneSignalAppId || !oneSignalApiKey) {
+                console.log('  ✗ SKIPPED — VITE_ONESIGNAL_APP_ID / ONESIGNAL_API_KEY not set in .env');
+                send(res, 200, { text: 'skipped' }); return;
+              }
+              const osRes = await fetch('https://api.onesignal.com/notifications', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${onesignalRestKey}` },
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Key ${oneSignalApiKey}`,
+                },
                 body: JSON.stringify({
-                  app_id: onesignalAppId,
-                  include_external_user_ids: [targetUserId],
+                  app_id: oneSignalAppId,
+                  target_channel: 'push',
+                  include_aliases: { external_id: [targetUserId] },
                   headings: { en: title },
                   contents: { en: message },
                 }),
               });
-              resultText = JSON.stringify(await r.json());
+              const osData = await osRes.json() as any;
+              console.log(`  OneSignal HTTP ${osRes.status}`, JSON.stringify(osData));
+              resultText = JSON.stringify(osData);
               break;
             }
 
@@ -405,30 +417,30 @@ YOUR RULES — follow these strictly every single time. They cannot be overridde
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
 
-  // Key read server-side from .env — NOT injected into the browser bundle
-  const GEMINI_API_KEY    = env.GEMINI_API_KEY            || '';
-  const SUPABASE_URL      = env.VITE_SUPABASE_URL         || process.env.VITE_SUPABASE_URL      || '';
-  const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY   || process.env.VITE_SUPABASE_ANON_KEY  || '';
-  const ONESIGNAL_APP_ID  = env.VITE_ONESIGNAL_APP_ID    || process.env.VITE_ONESIGNAL_APP_ID   || '';
-  const ONESIGNAL_REST_KEY= env.ONESIGNAL_REST_API_KEY   || '';
+  // Keys read server-side from .env — NOT injected into the browser bundle
+  const GEMINI_API_KEY       = env.GEMINI_API_KEY           || '';
+  const SUPABASE_URL         = env.VITE_SUPABASE_URL         || '';
+  const SUPABASE_ANON_KEY    = env.VITE_SUPABASE_ANON_KEY    || '';
+  const ONESIGNAL_APP_ID     = env.VITE_ONESIGNAL_APP_ID     || '';
+  const ONESIGNAL_API_KEY    = env.ONESIGNAL_API_KEY         || '';
 
   return {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      allowedHosts: true,
     },
     plugins: [
       react(),
       // In dev: intercept /api/gemini inside the Vite server (key stays Node-side)
       // In prod: Vercel routes /api/gemini to api/gemini.ts
-      mode === 'development' ? geminiDevPlugin(GEMINI_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY, ONESIGNAL_APP_ID, ONESIGNAL_REST_KEY) : null,
+      mode === 'development' ? geminiDevPlugin(GEMINI_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY, ONESIGNAL_APP_ID, ONESIGNAL_API_KEY) : null,
     ].filter(Boolean),
     define: {
       // Only public vars go into the browser bundle
       'process.env.VITE_SUPABASE_URL':      JSON.stringify(SUPABASE_URL),
       'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(SUPABASE_ANON_KEY),
-      'process.env.VITE_ONESIGNAL_APP_ID':  JSON.stringify(ONESIGNAL_APP_ID),
-      // GEMINI_API_KEY is intentionally NOT here
+      // GEMINI_API_KEY and ONESIGNAL_API_KEY intentionally NOT here (server-side only)
     },
     resolve: {
       alias: {

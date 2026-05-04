@@ -1,29 +1,6 @@
-import OneSignal from 'react-onesignal';
 import { supabase } from '../lib/supabase';
 
-export const initOneSignal = async () => {
-  const appId = import.meta.env.VITE_ONESIGNAL_APP_ID || '';
-  if (!appId) return; // skip if not configured
-
-  try {
-    await OneSignal.init({
-      appId,
-      allowLocalhostAsSecureOrigin: import.meta.env.DEV,
-    });
-
-    // Request push notification permission (required for notifications to work)
-    const os = OneSignal as any;
-    if (os.Notifications?.requestPermission) {
-      await os.Notifications.requestPermission();
-    } else if (os.User?.pushSubscription?.optIn) {
-      await os.User.pushSubscription.optIn();
-    } else if (os.showNativePrompt) {
-      await os.showNativePrompt();
-    }
-  } catch (err) {
-    console.error('Error initializing OneSignal:', err);
-  }
-};
+const TUTOR_API = (import.meta as any).env?.VITE_TUTOR_API_URL ?? 'http://localhost:8000';
 
 export const sendPushNotification = async (
   targetUserId: string,
@@ -33,29 +10,43 @@ export const sendPushNotification = async (
   try {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token ?? '';
-    await fetch('/api/gemini', {
+    const res = await fetch('/api/gemini', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ action: 'send-notification', targetUserId, title, message }),
     });
+    const data = await res.json();
+    console.log('[OneSignal] sendPushNotification response:', data);
+    if (data?.error) console.error('[OneSignal] send error:', data.error);
   } catch (err) {
-    console.error('Error sending push notification:', err);
+    console.error('[OneSignal] sendPushNotification failed:', err);
   }
 };
 
-export const setOneSignalExternalId = async (userId: string) => {
+export const scheduleFlashcardReminder = async (
+  userId: string,
+  chapterTitle: string,
+  delayDays: number
+): Promise<void> => {
+  if (!userId || delayDays <= 0) return;
   try {
-    // Use any to bypass version-specific type issues in react-onesignal
-    const os = OneSignal as any;
-    if (os.setExternalUserId) {
-      await os.setExternalUserId(userId);
-    } else if (os.login) {
-      await os.login(userId);
-    }
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token ?? '';
+    await fetch(`${TUTOR_API}/send-notification`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target_user_id: userId,
+        title: 'Time to Review! 🧠',
+        message: `Your flashcards for "${chapterTitle}" are due ${delayDays === 1 ? 'tomorrow' : `in ${delayDays} days`}. Keep the streak going!`,
+        send_after_seconds: delayDays * 24 * 60 * 60,
+        token,
+      }),
+    });
   } catch (err) {
-    console.error('Error setting OneSignal External ID:', err);
+    console.error('[OneSignal] scheduleFlashcardReminder failed:', err);
   }
 };

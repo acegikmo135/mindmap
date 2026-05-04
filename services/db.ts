@@ -433,9 +433,56 @@ export const adminDeleteUserData = async (userId: string): Promise<void> => {
   await Promise.all([
     supabase.from('user_data').delete().eq('user_id', userId),
     supabase.from('chat_history').delete().eq('user_id', userId),
+    supabase.from('chat_sessions').delete().eq('user_id', userId),
     supabase.from('quiz_results').delete().eq('user_id', userId),
     supabase.from('chapter_explanations').delete().eq('user_id', userId),
   ]);
+};
+
+// ── Chat Sessions (multi-chat per chapter) ─────────────────────────────────────
+
+export interface ChatSession {
+  id: string;
+  user_id: string;
+  chapter_id: string;
+  title: string;
+  messages: Message[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const getChatSessions = async (userId: string, chapterId: string): Promise<ChatSession[]> => {
+  const { data, error } = await supabase
+    .from('chat_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('chapter_id', chapterId)
+    .order('updated_at', { ascending: false });
+  if (error) { console.error('getChatSessions:', error); return []; }
+  return (data ?? []) as ChatSession[];
+};
+
+export const createChatSession = async (userId: string, chapterId: string, title = 'New Chat'): Promise<ChatSession | null> => {
+  const { data, error } = await supabase
+    .from('chat_sessions')
+    .insert({ user_id: userId, chapter_id: chapterId, title, messages: [] })
+    .select()
+    .single();
+  if (error) { console.error('createChatSession:', error); return null; }
+  return data as ChatSession;
+};
+
+export const updateChatSession = async (sessionId: string, updates: { title?: string; messages?: Message[] }): Promise<void> => {
+  const { error } = await supabase
+    .from('chat_sessions')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', sessionId);
+  if (error) console.error('updateChatSession:', error);
+};
+
+export const deleteChatSession = async (sessionId: string): Promise<void> => {
+  const { error } = await supabase.from('chat_sessions').delete().eq('id', sessionId);
+  if (error) console.error('deleteChatSession:', error);
 };
 
 export interface TableStat {

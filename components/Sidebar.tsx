@@ -14,6 +14,8 @@ interface SidebarProps {
   onSignOut?: () => void;
   totalPoints?: number;
   isAdmin?: boolean;
+  notifGranted?: boolean;
+  onEnableNotifications?: () => void;
 }
 
 const NAV_ITEMS = [
@@ -59,11 +61,11 @@ const NavItem: React.FC<{
 const Sidebar: React.FC<SidebarProps> = ({
   currentMode, setMode, theme, setTheme,
   onGoHome, activeChapterTitle, activeChapterSubject, isOpen, onClose,
-  onSignOut, totalPoints, isAdmin,
+  onSignOut, totalPoints, isAdmin, notifGranted, onEnableNotifications,
 }) => {
   const isSS = activeChapterSubject === 'Social Science';
   const pts = totalPoints ?? 0;
-  const xpPct = Math.min(100, (pts % 1000) / 10); // 0-100% within current 1000-pt band
+  const xpPct = Math.min(100, (pts % 1000) / 10);
 
   return (
     <>
@@ -129,6 +131,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                   label="Timeline"
                   active={currentMode === AppMode.TIMELINE}
                   onClick={() => { setMode(AppMode.TIMELINE); onClose(); }}
+                />
+              )}
+              {isSS && (
+                <NavItem
+                  icon="map"
+                  label="India Map"
+                  active={currentMode === AppMode.INDIA_MAP}
+                  onClick={() => { setMode(AppMode.INDIA_MAP); onClose(); }}
                 />
               )}
               {isAdmin && (
@@ -208,6 +218,18 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             ))}
           </div>
+
+
+          {/* Show only when not subscribed */}
+          {!notifGranted && onEnableNotifications && (
+            <button
+              onClick={onEnableNotifications}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-sm font-semibold text-primary hover:bg-primary-fixed transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">notifications</span>
+              Enable Notifications
+            </button>
+          )}
 
           {/* Sign out */}
           <button
