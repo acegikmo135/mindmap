@@ -1,5 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppMode, Theme } from '../types';
+
+const TUTOR_API = (import.meta as any).env?.VITE_TUTOR_API_URL ?? 'http://localhost:8000';
+
+function useBackendStatus() {
+  const [status, setStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  useEffect(() => {
+    let dead = false;
+    const check = async () => {
+      try {
+        const r = await fetch(`${TUTOR_API}/health`, { signal: AbortSignal.timeout(4000) });
+        if (!dead) setStatus(r.ok ? 'online' : 'offline');
+      } catch {
+        if (!dead) setStatus('offline');
+      }
+    };
+    check();
+    const id = setInterval(check, 30_000);
+    return () => { dead = true; clearInterval(id); };
+  }, []);
+  return status;
+}
 
 interface SidebarProps {
   currentMode: AppMode;
@@ -63,6 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onGoHome, activeChapterTitle, activeChapterSubject, isOpen, onClose,
   onSignOut, totalPoints, isAdmin, notifGranted, onEnableNotifications,
 }) => {
+  const backendStatus = useBackendStatus();
   const isSS = activeChapterSubject === 'Social Science';
   const pts = totalPoints ?? 0;
   const xpPct = Math.min(100, (pts % 1000) / 10);
@@ -230,6 +252,17 @@ const Sidebar: React.FC<SidebarProps> = ({
               Enable Notifications
             </button>
           )}
+
+          {/* Backend status indicator */}
+          <div className="flex items-center gap-2 px-3 py-1.5">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${
+              backendStatus === 'online'   ? 'bg-emerald-500' :
+              backendStatus === 'offline'  ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'
+            }`} />
+            <span className="text-[11px] text-secondary">
+              AI Tutor: {backendStatus === 'online' ? 'Connected' : backendStatus === 'offline' ? 'Offline' : 'Connecting…'}
+            </span>
+          </div>
 
           {/* Sign out */}
           <button
