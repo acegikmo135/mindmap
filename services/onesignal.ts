@@ -13,6 +13,22 @@ let _rejectOS!:  (err: any) => void;
 const _osReady = new Promise<any>((res, rej) => { _resolveOS = res; _rejectOS = rej; });
 const getOS = () => _osReady;
 
+// Wipe all service workers + all IndexedDB, then reload.
+// Called when OneSignal detects a stale/mismatched app ID.
+async function _nukeAndReload(): Promise<void> {
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+    if ('databases' in indexedDB) {
+      const dbs = await indexedDB.databases();
+      for (const db of dbs) {
+        if (db.name) indexedDB.deleteDatabase(db.name);
+      }
+    }
+  } catch { /* ignore */ }
+  window.location.reload();
+}
+
 export const initOneSignal = (): void => {
   if (window.__osInitialized__) {
     if (window.OneSignal) _resolveOS(window.OneSignal);
@@ -28,17 +44,6 @@ export const initOneSignal = (): void => {
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   window.OneSignalDeferred.push(async (OneSignal: any) => {
     try {
-      // Delete stale OneSignal IndexedDB data before init to prevent
-      // "AppID doesn't match" errors from previous sessions/domains
-      if ('databases' in indexedDB) {
-        const dbs = await indexedDB.databases();
-        for (const db of dbs) {
-          if (db.name?.toLowerCase().includes('onesignal')) {
-            indexedDB.deleteDatabase(db.name);
-          }
-        }
-      }
-
       await OneSignal.init({
         appId:                        APP_ID,
         allowLocalhostAsSecureOrigin: true,
@@ -60,7 +65,15 @@ export const initOneSignal = (): void => {
 
       console.log('[OneSignal] ✅ ready | optedIn:', OneSignal.User.PushSubscription.optedIn);
       _resolveOS(OneSignal);
-    } catch (err) {
+    } catch (err: any) {
+      const msg: string = err?.message ?? '';
+      // Stale service worker from a previous OneSignal app on this domain.
+      // Nuke everything and reload — init will succeed on the clean page.
+      if (msg.includes('AppID') || msg.includes('match') || msg.includes('existing')) {
+        console.warn('[OneSignal] Stale app — clearing service workers and reloading…');
+        await _nukeAndReload();
+        return;
+      }
       console.error('[OneSignal] init failed:', err);
       _rejectOS(err);
     }
@@ -86,10 +99,8 @@ export const requestOneSignalPermission = async (): Promise<boolean> => {
     const os = await getOS();
     if (os.User.PushSubscription.optedIn) return true;
 
-    // Show slide prompt
     os.Slidedown.promptPush({ force: true });
 
-    // Poll until optedIn or permission denied (max 30s)
     for (let i = 0; i < 30; i++) {
       await new Promise(r => setTimeout(r, 1000));
       if (os.User.PushSubscription.optedIn) {
@@ -99,13 +110,10 @@ export const requestOneSignalPermission = async (): Promise<boolean> => {
       if (Notification.permission === 'denied') return false;
     }
 
-    // Permission granted but push endpoint still not registered — force it
     if (Notification.permission === 'granted') {
-      console.log('[OneSignal] forcing optIn() to register push endpoint...');
       await os.User.PushSubscription.optIn();
     }
 
-    console.log('[OneSignal] final optedIn:', os.User.PushSubscription.optedIn);
     return os.User.PushSubscription.optedIn === true;
   } catch (err) {
     console.error('[OneSignal] subscribe failed:', err);
