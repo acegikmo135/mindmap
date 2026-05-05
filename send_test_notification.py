@@ -29,7 +29,7 @@ except ImportError:
     pass
 
 APP_ID  = os.getenv("VITE_ONESIGNAL_APP_ID",  "e2143e70-45e8-4b33-b361-77664a1b3f21")
-API_KEY = os.getenv("ONESIGNAL_API_KEY",       "os_v2_app_4ikd44cf5bfthm3bo5teugz7efyybgbnt2su2ufrpj73irf246l4neyttycwtw5cdzn2n2tdbqfdl2xato52dicap5d2xlzszryk4ba")
+API_KEY = os.getenv("ONESIGNAL_API_KEY",       "os_v2_app_4ikd44cf5bfthm3bo5teugz7eflcvllwdjuenpmimxmencdbbujako6hzda4nvyxrfyam7d7ohy6sh52lkgz2cnbg3tydhtmxcwz45i")
 
 HEADERS = {
     "Content-Type":  "application/json",
@@ -60,20 +60,9 @@ def send(title: str, message: str, user_id: str | None = None) -> None:
         target      = {"include_aliases": {"external_id": [user_id]}, "target_channel": "push"}
         target_desc = f"user {user_id[:8]}..."
     else:
-        # Use include_aliases with all known players instead of segment,
-        # because OneSignal v16 SDK sets notification_types=null in the legacy
-        # players API which excludes them from "Total Subscriptions" segment.
-        # Fetching all players and sending by external_id bypasses this.
-        players_resp = _request("GET", f"https://api.onesignal.com/players?app_id={APP_ID}&limit=50")
-        players = players_resp.get("players", [])
-        ext_ids = list({p["external_user_id"] for p in players
-                        if p.get("external_user_id") and not p.get("invalid_identifier")})
-        if ext_ids:
-            target      = {"include_aliases": {"external_id": ext_ids}, "target_channel": "push"}
-            target_desc = f"ALL players by external_id ({len(ext_ids)} users)"
-        else:
-            target      = {"included_segments": ["Total Subscriptions"]}
-            target_desc = "ALL subscribed users (segment fallback)"
+        # Send to all subscribed users via segment
+        target      = {"included_segments": ["Total Subscriptions"], "target_channel": "push"}
+        target_desc = "ALL subscribed users"
 
     payload = {
         "app_id":   APP_ID,

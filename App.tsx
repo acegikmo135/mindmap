@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Auth from './components/Auth';
 import ProfilePopup from './components/ProfilePopup';
+import PWAInstallBanner from './components/PWAInstallBanner';
 
 const ChapterBreakdown = lazy(() => import('./components/ChapterBreakdown'));
 const MindMap          = lazy(() => import('./components/MindMap'));
@@ -442,6 +443,8 @@ const AuthenticatedApp: React.FC = () => {
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
+
+      <PWAInstallBanner />
 
 
       <Sidebar
