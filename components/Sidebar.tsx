@@ -37,6 +37,8 @@ interface SidebarProps {
   isAdmin?: boolean;
   notifGranted?: boolean;
   onEnableNotifications?: () => void;
+  canInstallPWA?: boolean;
+  onInstallPWA?: () => void;
 }
 
 const NAV_ITEMS = [
@@ -83,6 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentMode, setMode, theme, setTheme,
   onGoHome, activeChapterTitle, activeChapterSubject, isOpen, onClose,
   onSignOut, totalPoints, isAdmin, notifGranted, onEnableNotifications,
+  canInstallPWA, onInstallPWA,
 }) => {
   const backendStatus = useBackendStatus();
   const isSS = activeChapterSubject === 'Social Science';
@@ -250,6 +253,17 @@ const Sidebar: React.FC<SidebarProps> = ({
             >
               <span className="material-symbols-outlined text-[18px]">notifications</span>
               Enable Notifications
+            </button>
+          )}
+
+          {/* PWA install — shown when browser supports it and app isn't installed */}
+          {canInstallPWA && onInstallPWA && (
+            <button
+              onClick={onInstallPWA}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-sm font-semibold text-primary hover:bg-primary-fixed transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">install_mobile</span>
+              Install App
             </button>
           )}
 

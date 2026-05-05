@@ -49,6 +49,22 @@ export const initOneSignal = (): void => {
         try { e.notification.display(); } catch { /* ignore */ }
       });
 
+      // If OneSignal thinks user is opted-in but the browser's push subscription
+      // is missing or stale (e.g. from a different app ID or reinstalled SW),
+      // force a fresh registration so the FCM token is valid.
+      try {
+        if (OneSignal.User.PushSubscription.optedIn) {
+          const sw = await navigator.serviceWorker.ready;
+          const browserSub = await sw.pushManager.getSubscription();
+          if (!browserSub) {
+            console.log('[OneSignal] Stale subscription detected — re-registering...');
+            await OneSignal.User.PushSubscription.optOut();
+            await new Promise(r => setTimeout(r, 300));
+            await OneSignal.User.PushSubscription.optIn();
+          }
+        }
+      } catch { /* ignore */ }
+
       console.log('[OneSignal] ✅ ready | optedIn:', OneSignal.User.PushSubscription.optedIn);
       _resolveOS(OneSignal);
     } catch (err: any) {

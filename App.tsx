@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Auth from './components/Auth';
 import ProfilePopup from './components/ProfilePopup';
-import PWAInstallBanner from './components/PWAInstallBanner';
 
 const ChapterBreakdown = lazy(() => import('./components/ChapterBreakdown'));
 const MindMap          = lazy(() => import('./components/MindMap'));
@@ -86,6 +85,24 @@ const AuthenticatedApp: React.FC = () => {
     quiz_calls_per_hour: 10, flashcard_calls_per_hour: 10, explanation_calls_per_hour: 5,
   });
   const [notifGranted, setNotifGranted] = useState(isNotificationGranted);
+  const [pwaPrompt, setPwaPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => { e.preventDefault(); setPwaPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', () => setPwaPrompt(null));
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', () => setPwaPrompt(null));
+    };
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (!pwaPrompt) return;
+    await pwaPrompt.prompt();
+    const { outcome } = await pwaPrompt.userChoice;
+    if (outcome === 'accepted') setPwaPrompt(null);
+  };
 
   // Init SDK on mount — no permission needed
   useEffect(() => {
@@ -444,9 +461,6 @@ const AuthenticatedApp: React.FC = () => {
         />
       )}
 
-      <PWAInstallBanner />
-
-
       <Sidebar
         currentMode={currentMode}
         setMode={handleModeChange}
@@ -462,6 +476,8 @@ const AuthenticatedApp: React.FC = () => {
         isAdmin={profile?.is_admin === true}
         notifGranted={notifGranted}
         onEnableNotifications={handleEnableNotifications}
+        canInstallPWA={!!pwaPrompt}
+        onInstallPWA={handleInstallPWA}
       />
 
       {/* Main content */}
