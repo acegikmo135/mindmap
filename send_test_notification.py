@@ -79,7 +79,7 @@ def send(title: str, message: str, user_id: str | None = None) -> None:
         "app_id":   APP_ID,
         "headings": {"en": title},
         "contents": {"en": message},
-        "url":      "http://localhost:3000",
+        "url":      "https://mindmap-chi-jade.vercel.app",
         **target,
     }
 
