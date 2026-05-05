@@ -7,6 +7,9 @@
 ../../Backend.txt
 Backend.txt
 tutor_backend.py
+send_test_notification.py
+requirements.txt
+chat_sessions.sql
 
 # Logs
 logs
@@ -33,3 +36,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
